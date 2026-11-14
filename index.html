@@ -399,8 +399,8 @@ function renderHoje() {
   }).join('');
   const reg = data.registros[iso(d)];
   $app.innerHTML = `
-    <div class="row"><div><div class="muted" style="font-size:13px">${dataLonga(d)}</div>
-      <h1 class="serif" style="font-size:26px">${saudacao()}, ${esc(data.perfil.nome)}</h1></div>${logo()}</div>
+    <div class="row"><div style="min-width:0"><div class="muted" style="font-size:13px">${dataLonga(d)}</div>
+      <h1 class="serif" style="font-size:26px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${saudacao()}, ${esc(data.perfil.nome.split(/\s+/)[0])}</h1></div>${logo()}</div>
     <div class="week mt16">${semana}</div>
     <div class="phasecard mt20" style="background:${c.cor}">
       <div class="row" style="align-items:center;justify-content:flex-start;gap:16px">
