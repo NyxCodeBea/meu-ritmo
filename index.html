@@ -67,6 +67,7 @@ nav.tabs button.on{color:var(--primary-ink);font-weight:700}
 .cal{display:grid;grid-template-columns:repeat(7,1fr);row-gap:12px}
 .cal .wd{text-align:center;font-size:11px;font-weight:600;color:var(--muted)}
 .cal button{justify-self:center;width:40px;height:40px;border-radius:20px;border:2px solid transparent;font-size:14px;font-weight:600;position:relative;padding:0}
+.cal button .gota{position:absolute;top:-5px;right:-3px;width:15px;height:15px;color:var(--m)}
 .cal button small{position:absolute;right:-2px;bottom:-4px;font-size:9px;font-weight:600;color:var(--muted);background:#fff;border-radius:6px;padding:0 2px;line-height:12px}
 .cal button .reg{position:absolute;bottom:3px;left:50%;width:4px;height:4px;margin-left:-2px;border-radius:2px;background:currentColor}
 .legend{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;font-size:13px;color:#4A3E4C}
@@ -460,7 +461,7 @@ function renderCalendario() {
     const di = new Date(ano, mes, i), k = iso(di), inf = infoDia(di), f = inf.fase, c = corFase(f);
     const isH = k === hj, isS = k === calSel, fut = di > hoje();
     const bg = isH ? 'var(--ink)' : c.soft, fg = isH ? '#fff' : c.ink;
-    cells += `<button type="button" data-d="${k}" style="background:${bg};color:${fg};border-color:${isS && !isH ? 'var(--ink)' : 'transparent'};${fut ? 'opacity:.75' : ''}" aria-label="${i} de ${MESES[mes]}, fase ${FASES[f].nome}${data.inicios.includes(k) ? ', início da menstruação' : ''}">${i}<small aria-hidden="true">${inf.dia}</small>${data.registros[k] ? '<i class="reg" aria-hidden="true"></i>' : ''}</button>`;
+    cells += `<button type="button" data-d="${k}" style="background:${bg};color:${fg};border-color:${isS && !isH ? 'var(--ink)' : 'transparent'};${fut ? 'opacity:.75' : ''}" aria-label="${i} de ${MESES[mes]}, fase ${FASES[f].nome}${data.inicios.includes(k) ? ', início da menstruação' : ''}">${i}${f === 'm' ? `<svg class="gota" viewBox="0 0 24 24" aria-hidden="true"><path d="${I.gota}" fill="${!inf.previsto && di <= hoje() ? 'currentColor' : '#fff'}" stroke="currentColor" stroke-width="2.2"/></svg>` : ''}<small aria-hidden="true">${inf.dia}</small>${data.registros[k] ? '<i class="reg" aria-hidden="true"></i>' : ''}</button>`;
   }
   const sd = parse(calSel), si = infoDia(sd), sc = corFase(si.fase), reg = data.registros[calSel];
   const prox = proximaMenstruacao(hoje());
@@ -472,7 +473,9 @@ function renderCalendario() {
     <div class="row"><div><div class="kicker muted">Seu ciclo</div><h1 class="serif h1">${MESES[mes][0].toUpperCase() + MESES[mes].slice(1)} de ${ano}</h1></div>
       <div style="display:flex;gap:8px"><button class="iconbtn" id="ant" aria-label="Mês anterior">${ico(I.volta)}</button><button class="iconbtn" id="prox" aria-label="Próximo mês">${ico(I.vai)}</button></div></div>
     <div class="card mt20" style="padding:16px 10px"><div class="cal">${cells}</div></div>
-    <div class="legend mt16"><div><span style="background:var(--m)"></span>Menstrual</div><div><span style="background:var(--f)"></span>Folicular</div><div><span style="background:var(--o)"></span>Ovulatória</div><div><span style="background:var(--l)"></span>Lútea</div></div>
+    <div class="legend mt16"><div><span style="background:var(--m)"></span>Menstrual</div><div><span style="background:var(--f)"></span>Folicular</div><div><span style="background:var(--o)"></span>Ovulatória</div><div><span style="background:var(--l)"></span>Lútea</div>
+      <div><svg viewBox="0 0 24 24" aria-hidden="true" style="width:15px;height:15px;vertical-align:-2px;margin-right:8px;color:var(--m)"><path d="${I.gota}" fill="currentColor" stroke="currentColor" stroke-width="2.2"/></svg>Menstruação</div>
+      <div><svg viewBox="0 0 24 24" aria-hidden="true" style="width:15px;height:15px;vertical-align:-2px;margin-right:8px;color:var(--m)"><path d="${I.gota}" fill="#fff" stroke="currentColor" stroke-width="2.2"/></svg>Previsão</div></div>
     <div class="card mt16" style="display:flex;flex-direction:column;gap:10px">
       <div class="row"><span class="muted" style="font-size:13px">${dataLonga(sd)}</span><span style="font-size:13px;font-weight:700;color:${sc.ink}">Dia ${si.dia}${sd > hoje() ? ' · previsão' : ''}</span></div>
       <div class="serif" style="font-size:22px;color:${sc.ink}">Fase ${FASES[si.fase].nome}</div>
