@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#FCEFF1">
+<title>Meu Ritmo</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Meu Ritmo">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FCEFF1; --soft:#F7D7DE; --line:#F3D6DC; --card:#FFFFFF;
+  --ink:#2A1F2D; --muted:#6E6170; --primary:#B44C66; --primary-ink:#A03D57; --accent:#E39AAA;
+  --m:#B8475F; --m-ink:#963249; --m-soft:#F6E2E6;
+  --f:#C8693A; --f-ink:#9A4A22; --f-soft:#F8E6DA;
+  --o:#A87A12; --o-ink:#7E5A08; --o-soft:#F6EBCB;
+  --l:#7C5FAE; --l-ink:#5E4689; --l-soft:#ECE4F6;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 'DM Sans',system-ui,sans-serif}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+.app{max-width:440px;margin:0 auto;min-height:100vh;padding:calc(env(safe-area-inset-top) + 20px) 20px calc(env(safe-area-inset-bottom) + 110px);position:relative}
+.serif{font-family:Fraunces,Georgia,serif;font-weight:500}
+.kicker{font-size:12px;font-weight:700;letter-spacing:.13em;text-transform:uppercase}
+.muted{color:var(--muted)}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.card{background:var(--card);border-radius:22px;padding:16px}
+h1,h2,h3{margin:0}
+.h1{font-size:28px;line-height:1.12}
+.h2{font-size:21px}
+.mt8{margin-top:8px}.mt12{margin-top:12px}.mt16{margin-top:16px}.mt20{margin-top:20px}.mt24{margin-top:24px}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:52px;width:100%;border-radius:26px;border:0;background:var(--primary);color:#fff;font-weight:600;font-size:16px;padding:0 20px}
+.btn.ghost{background:#fff;color:var(--primary-ink);border:1.5px solid var(--accent)}
+.btn:disabled{opacity:.45}
+.chip{min-height:42px;padding:0 16px;border-radius:21px;border:1.5px solid var(--line);background:#fff;font-size:14px;font-weight:500}
+.chip.on{background:var(--primary);border-color:var(--primary);color:#fff}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:13px;font-weight:600;color:var(--muted)}
+.input{min-height:50px;border-radius:16px;border:1.5px solid var(--line);background:#fff;padding:0 14px;font-size:16px;width:100%}
+.input:focus,.chip:focus-visible,.btn:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.icon{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.iconbtn{width:44px;height:44px;border-radius:22px;border:0;background:#fff;display:flex;align-items:center;justify-content:center;color:var(--ink);box-shadow:0 1px 3px rgba(42,31,45,.08)}
+nav.tabs{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom) + 14px);width:min(408px,calc(100% - 32px));height:66px;border-radius:33px;background:#fff;box-shadow:0 6px 24px rgba(42,31,45,.12);display:grid;grid-template-columns:repeat(4,1fr);z-index:10}
+nav.tabs button{border:0;background:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11px;font-weight:500;color:var(--muted)}
+nav.tabs button.on{color:var(--primary-ink);font-weight:700}
+.phasecard{border-radius:28px;padding:22px;color:#fff;display:flex;flex-direction:column;gap:14px}
+.bars{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.bars span{height:8px;border-radius:4px;background:rgba(255,255,255,.32)}
+.bars span.on{background:#fff}
+.sug{background:#fff;border-radius:20px;padding:14px;display:flex;flex-direction:column;gap:8px;min-height:108px}
+.sug .ic{width:30px;height:30px;border-radius:10px;display:flex;align-items:center;justify-content:center}
+.sug .ic svg{width:17px;height:17px}
+.week{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.week div{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:11px;font-weight:500;color:var(--muted)}
+.dot{width:38px;height:38px;border-radius:19px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);row-gap:8px}
+.cal .wd{text-align:center;font-size:11px;font-weight:600;color:var(--muted)}
+.cal button{justify-self:center;width:40px;height:40px;border-radius:20px;border:2px solid transparent;font-size:14px;font-weight:600;position:relative;padding:0}
+.cal button .reg{position:absolute;bottom:3px;left:50%;width:4px;height:4px;margin-left:-2px;border-radius:2px;background:currentColor}
+.legend{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;font-size:13px;color:#4A3E4C}
+.legend span{display:inline-block;width:14px;height:14px;border-radius:7px;vertical-align:-2px;margin-right:8px}
+.seg{display:grid;gap:8px}
+.energy button{min-height:58px;border-radius:16px;border:1.5px solid var(--line);background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;font-weight:600}
+.energy button b{font-family:Fraunces,serif;font-size:18px;font-weight:600}
+.energy button.on{background:var(--primary);border-color:var(--primary);color:#fff}
+.article{background:var(--ink);color:#fff;border-radius:26px;padding:22px}
+.article p{color:#E8DEE6;font-size:15px;line-height:1.55}
+.listitem{display:flex;gap:14px;align-items:center;background:#fff;border-radius:20px;padding:14px;width:100%;border:0;text-align:left}
+.sheet{position:fixed;inset:0;background:rgba(42,31,45,.35);display:flex;align-items:flex-end;justify-content:center;z-index:20}
+.sheet .in{background:var(--bg);width:min(440px,100%);max-height:88vh;overflow:auto;border-radius:28px 28px 0 0;padding:22px 20px calc(env(safe-area-inset-bottom) + 24px)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom) + 96px);background:var(--ink);color:#fff;padding:12px 18px;border-radius:14px;font-size:14px;z-index:30}
+.note{font-size:12.5px;color:var(--muted);line-height:1.5}
+.pbar{display:flex;height:10px;border-radius:5px;overflow:hidden;gap:2px}
+.statrow{display:grid;grid-template-columns:90px 1fr 34px;gap:10px;align-items:center;font-size:13px}
+.statrow .track{height:10px;border-radius:5px;background:var(--line);overflow:hidden}
+.statrow .track i{display:block;height:100%;border-radius:5px}
+.steps{display:flex;gap:6px}
+.steps i{flex:1;height:4px;border-radius:2px;background:var(--line)}
+.steps i.on{background:var(--primary)}
+</style>
+<script>
+/* Ícone da tela inicial gerado no próprio app (onda rosa) */
+(function(){try{var c=document.createElement('canvas');c.width=c.height=180;var x=c.getContext('2d');
+x.fillStyle='#F7D7DE';x.fillRect(0,0,180,180);x.strokeStyle='#B44C66';x.lineWidth=13.5;x.lineCap='round';x.lineJoin='round';x.beginPath();
+for(var i=0;i<=100;i++){var t=i/100,px=32.4+t*115.2,py=90-Math.sin(t*2*Math.PI*1.25)*16.2;i?x.lineTo(px,py):x.moveTo(px,py);}x.stroke();
+var u=c.toDataURL('image/png');['apple-touch-icon','icon'].forEach(function(r){var l=document.createElement('link');l.rel=r;l.href=u;document.head.appendChild(l);});}catch(e){}})();
+</script>
+</head>
+<body>
+<div class="app" id="app"></div>
+<nav class="tabs" id="tabs" hidden></nav>
+<div id="overlay"></div>
+
+<script>
+/* =========================================================
+   MEU RITMO — protótipo v0.1
+   Estrutura pensada para virar app Android (Capacitor) depois.
+   Dados ficam só neste aparelho (localStorage).
+   ========================================================= */
+
+// ---------- Armazenamento ----------
+const KEY = 'meuritmo.v1';
+const store = {
+  load() { try { return JSON.parse(localStorage.getItem(KEY)) || null; } catch (e) { return null; } },
+  save(d) { try { localStorage.setItem(KEY, JSON.stringify(d)); return true; } catch (e) { return false; } },
+  clear() { try { localStorage.removeItem(KEY); } catch (e) {} }
+};
+let data = store.load() || { perfil: null, registros: {}, inicios: [] };
+function persist() { if (!store.save(data)) toast('Não consegui salvar neste navegador.'); }
+
+// ---------- Datas ----------
+const pad = n => String(n).padStart(2, '0');
+const iso = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+const parse = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
+const diasEntre = (a, b) => Math.round((Date.UTC(b.getFullYear(), b.getMonth(), b.getDate()) - Date.UTC(a.getFullYear(), a.getMonth(), a.getDate())) / 86400000);
+const addDias = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
+const hoje = () => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; };
+const MESES = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+const SEM = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+const SEM_LONGO = ['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'];
+const dataLonga = d => SEM_LONGO[d.getDay()] + ', ' + d.getDate() + ' de ' + MESES[d.getMonth()];
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+// ---------- Lógica do ciclo ----------
+// Duração média: usa os inícios registrados (se houver 2+), senão a informada no cadastro.
+function duracaoCiclo() {
+  const ini = [...data.inicios].sort();
+  if (ini.length >= 2) {
+    const gaps = [];
+    for (let i = 1; i < ini.length; i++) { const g = diasEntre(parse(ini[i - 1]), parse(ini[i])); if (g >= 18 && g <= 45) gaps.push(g); }
+    const ult = gaps.slice(-6);
+    if (ult.length) return Math.round(ult.reduce((a, b) => a + b, 0) / ult.length);
+  }
+  return data.perfil.ciclo;
+}
+function ultimoInicio(ate) {
+  const ini = [...data.inicios].sort().filter(s => parse(s) <= ate);
+  return ini.length ? parse(ini[ini.length - 1]) : null;
+}
+// Retorna { dia, fase, ciclo, previsto } para uma data
+function infoDia(d) {
+  const ciclo = duracaoCiclo();
+  const menstr = data.perfil.menstruacao;
+  let base = ultimoInicio(d);
+  let previsto = false;
+  if (!base) { // data anterior ao primeiro registro: projeta para trás
+    const primeiro = parse([...data.inicios].sort()[0]);
+    const n = Math.ceil(diasEntre(d, primeiro) / ciclo);
+    base = addDias(primeiro, -n * ciclo); previsto = true;
+  }
+  let dia = diasEntre(base, d) + 1;
+  if (dia > ciclo) { previsto = true; dia = ((dia - 1) % ciclo) + 1; }
+  const ovu = Math.max(menstr + 3, ciclo - 14);
+  let fase;
+  if (dia <= menstr) fase = 'm';
+  else if (dia < ovu - 1) fase = 'f';
+  else if (dia <= ovu + 1) fase = 'o';
+  else fase = 'l';
+  return { dia, fase, ciclo, previsto, ovu };
+}
+function proximaMenstruacao(d) {
+  const ciclo = duracaoCiclo();
+  const base = ultimoInicio(d) || parse(data.inicios[0]);
+  let prox = addDias(base, ciclo);
+  while (prox <= d) prox = addDias(prox, ciclo);
+  return prox;
+}
+function diasAteProximaFase(d) {
+  const atual = infoDia(d).fase;
+  for (let i = 1; i <= 40; i++) { const f = infoDia(addDias(d, i)).fase; if (f !== atual) return { dias: i, fase: f }; }
+  return null;
+}
+
+// ---------- Conteúdo (rascunho para revisão profissional) ----------
+const FASES = {
+  m: { nome: 'menstrual', titulo: 'Menstrual', energia: 1, frase: 'Hora de desacelerar e se acolher' },
+  f: { nome: 'folicular', titulo: 'Folicular', energia: 3, frase: 'Energia subindo, bom momento para começar' },
+  o: { nome: 'ovulatória', titulo: 'Ovulatória', energia: 4, frase: 'Pico de energia e de conversa' },
+  l: { nome: 'lútea', titulo: 'Lútea', energia: 2, frase: 'Desacelere, organize e se cuide' }
+};
+const SUGESTOES = {
+  m: {
+    treino: ['Caminhada leve ou alongamento, se fizer bem', 'Yoga suave ou mobilidade por 20 minutos', 'Descanso também é treino: ouça o corpo hoje'],
+    comida: ['Feijão, folhas escuras e bastante água', 'Caldo quentinho com legumes e frango', 'Fruta com aveia no lanche para manter a energia'],
+    trabalho: ['Priorize tarefas simples e revisões', 'Bom dia para avaliar o que funcionou no mês', 'Reduza reuniões longas, se puder'],
+    cuidado: ['Bolsa morna e dormir um pouco mais cedo', 'Banho demorado e uma série leve', 'Diga não a um compromisso que pode esperar']
+  },
+  f: {
+    treino: ['Dia bom para aumentar a carga do treino', 'Teste uma aula nova: dança, funcional ou bike', 'Treino de força com progressão de peso'],
+    comida: ['Cuscuz com ovo e legumes no café', 'Prato colorido com salada, arroz, feijão e proteína', 'Iogurte natural com fruta e castanhas no lanche'],
+    trabalho: ['Tire do papel aquele projeto novo', 'Bom momento para planejar o mês', 'Aproveite a disposição para aprender algo'],
+    cuidado: ['Experimente uma aula ou rota diferente', 'Marque algo divertido para o fim de semana', 'Organize um cantinho da casa que te incomoda']
+  },
+  o: {
+    treino: ['Treino mais intenso ou corrida mais longa', 'Aula em grupo: a energia social ajuda', 'Desafie seu recorde, com aquecimento caprichado'],
+    comida: ['Salada colorida com frango grelhado', 'Peixe com legumes assados', 'Muita água e frutas frescas ao longo do dia'],
+    trabalho: ['Marque reuniões e apresentações', 'Bom dia para conversas difíceis ou negociações', 'Grave vídeos e conteúdos para a semana'],
+    cuidado: ['Encontre as amigas, aproveite o clima', 'Faça aquela ligação que você vem adiando', 'Use a energia para algo que te dá orgulho']
+  },
+  l: {
+    treino: ['Pilates, yoga ou musculação moderada', 'Caminhada ao ar livre de 30 a 40 minutos', 'Mantenha o treino, mas sem se cobrar recorde'],
+    comida: ['Lanches planejados com proteína e fibras', 'Batata-doce, ovos e folhas para mais saciedade', 'Tenha uma opção doce saudável à mão, como banana com canela'],
+    trabalho: ['Organize, finalize e revise pendências', 'Bom momento para tarefas de detalhe', 'Deixe a semana seguinte planejada'],
+    cuidado: ['Menos café à tarde e proteja seu sono', 'Escreva o que está sentindo antes de dormir', 'Avise quem convive com você que precisa de calma']
+  }
+};
+const OBJETIVOS = [
+  { id: 'treino', t: 'Treinar melhor' },
+  { id: 'trabalho', t: 'Render no trabalho' },
+  { id: 'cuidado', t: 'Entender a TPM' },
+  { id: 'comida', t: 'Cuidar da alimentação' },
+  { id: 'auto', t: 'Me conhecer melhor' }
+];
+const CAT = {
+  treino: { t: 'Treino', path: 'M6.5 6.5v11M17.5 6.5v11M3 9.5v5M21 9.5v5M6.5 12h11' },
+  comida: { t: 'Comida', path: 'M3 11h18a9 9 0 0 1-18 0zM7 7c0-1.5 1-2.5 2-3M12 7c0-1.5 1-2.5 2-3' },
+  trabalho: { t: 'Trabalho', path: 'M4 8h16v11H4zM9 8V5h6v3M4 13h16' },
+  cuidado: { t: 'Cuidado', path: 'M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z' }
+};
+const LEITURAS = {
+  m: { titulo: 'Por que o corpo pede pausa nos primeiros dias', min: 3, texto: [
+    'No começo do ciclo, os hormônios estrogênio e progesterona estão nos níveis mais baixos do mês. Muitas mulheres sentem menos energia, cólica ou vontade de ficar mais quietas.',
+    'Isso não é preguiça: é um momento em que o corpo está trabalhando. Movimentos leves, calor no abdômen, hidratação e sono costumam ajudar.',
+    'Cada mulher sente de um jeito. Se a dor atrapalha sua rotina ou o fluxo é muito intenso, vale conversar com sua ginecologista.'] },
+  f: { titulo: 'Por que muitas mulheres sentem mais energia nesta fase', min: 4, texto: [
+    'Depois da menstruação, o estrogênio começa a subir. Para muitas mulheres, isso vem acompanhado de mais disposição, foco e vontade de começar coisas novas.',
+    'É um bom momento para planejar, experimentar treinos diferentes e tirar ideias do papel, sem a obrigação de render o máximo todos os dias.',
+    'Registre como você se sente: com alguns ciclos, o app mostra se esse padrão vale para você.'] },
+  o: { titulo: 'Ovulação: o pico do mês', min: 3, texto: [
+    'Perto da ovulação, o estrogênio chega ao ponto mais alto. Muitas mulheres se sentem mais comunicativas, confiantes e com mais energia para treinos intensos.',
+    'Aproveite para conversas importantes, apresentações e encontros. Lembre de aquecer bem antes de treinos fortes.',
+    'Importante: este app não é método contraceptivo nem serve para planejar ou evitar gravidez.'] },
+  l: { titulo: 'Fase lútea: desacelerar sem culpa', min: 4, texto: [
+    'Depois da ovulação, a progesterona sobe. É comum sentir mais fome, inchaço, sono diferente e, perto da menstruação, sintomas de TPM.',
+    'Rotina previsível ajuda: refeições planejadas com proteína e fibras, treinos moderados, menos cafeína à tarde e mais cuidado com o sono.',
+    'Se a TPM afeta muito seu humor ou sua vida, isso merece atenção profissional. Você não precisa só aguentar.'] }
+};
+const RECEITAS = {
+  m: [{ t: 'Caldo de feijão com couve', tag: 'Almoço · 30 min' }, { t: 'Mingau de aveia com banana', tag: 'Café · 10 min' }],
+  f: [{ t: 'Cuscuz com ovo e legumes', tag: 'Café · 15 min' }, { t: 'Tapioca de frango com queijo branco', tag: 'Lanche · 10 min' }],
+  o: [{ t: 'Salada de grão-de-bico com frango', tag: 'Almoço · 20 min' }, { t: 'Peixe assado com legumes', tag: 'Jantar · 35 min' }],
+  l: [{ t: 'Omelete de espinafre com batata-doce', tag: 'Jantar · 20 min' }, { t: 'Banana com canela e pasta de amendoim', tag: 'Lanche · 5 min' }]
+};
+const MOVIMENTO = {
+  m: { t: 'Alongamento e mobilidade', d: '20 min · Leve' },
+  f: { t: 'Força para pernas e glúteos', d: '35 min · Moderada a alta' },
+  o: { t: 'Intervalado ou corrida', d: '30 min · Alta' },
+  l: { t: 'Pilates ou força moderada', d: '35 min · Moderada' }
+};
+const HUMORES = ['Animada', 'Calma', 'Focada', 'Sensível', 'Irritada', 'Ansiosa', 'Triste'];
+const SINTOMAS = ['Cólica', 'Inchaço', 'Dor de cabeça', 'Fome extra', 'Cansaço', 'Seios sensíveis', 'Acne', 'Pele boa', 'Nenhum'];
+const FLUXOS = ['Nenhum', 'Leve', 'Moderado', 'Intenso'];
+const SONOS = ['Mal', 'Mais ou menos', 'Bem'];
+const ENERGIAS = ['Esgotada', 'Baixa', 'Ok', 'Boa', 'Ótima'];
+
+// ---------- Ícones ----------
+const ico = (p, extra = '') => `<svg class="icon" viewBox="0 0 24 24" aria-hidden="true" ${extra}><path d="${p}"/></svg>`;
+const I = {
+  sol: 'M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4',
+  cal: 'M5 5h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2zM8 3v4M16 3v4M3 10h18',
+  livro: 'M4 5a2 2 0 0 1 2-2h12v16H6a2 2 0 0 0-2 2zM4 21V5',
+  user: 'M12 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM4 21c1.5-4 4.5-6 8-6s6.5 2 8 6',
+  mais: 'M12 5v14M5 12h14',
+  volta: 'M15 18l-6-6 6-6',
+  vai: 'M9 6l6 6-6 6',
+  x: 'M6 6l12 12M18 6L6 18',
+  gota: 'M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z',
+  check: 'M20 6L9 17l-5-5'
+};
+const logo = (c = 'var(--accent)', bg = 'var(--soft)') => `<svg width="44" height="44" viewBox="0 0 44 44" role="img" aria-label="Meu Ritmo"><circle cx="22" cy="22" r="21" fill="${bg}"/><path d="M9 24c3.5-6 7-6 10.5 0s7 6 10.5 0 5-4 5-4" fill="none" stroke="${c}" stroke-width="2.6" stroke-linecap="round"/></svg>`;
+
+// ---------- Estado da interface ----------
+let tela = 'hoje';
+let calMes = (() => { const d = hoje(); return new Date(d.getFullYear(), d.getMonth(), 1); })();
+let calSel = iso(hoje());
+let onb = { passo: 0, nome: '', inicio: '', ciclo: 28, menstruacao: 5, objetivos: [] };
+let conteudoFase = null;
+
+const $app = document.getElementById('app');
+const $tabs = document.getElementById('tabs');
+const $ov = document.getElementById('overlay');
+
+function toast(msg) {
+  const t = document.createElement('div'); t.className = 'toast'; t.setAttribute('role', 'status'); t.textContent = msg;
+  document.body.appendChild(t); setTimeout(() => t.remove(), 2200);
+}
+const corFase = f => ({ cor: `var(--${f})`, ink: `var(--${f}-ink)`, soft: `var(--${f}-soft)` });
+
+// ---------- Cadastro ----------
+function renderOnboarding() {
+  $tabs.hidden = true;
+  const p = onb.passo, total = 4;
+  const steps = `<div class="steps" aria-hidden="true">${Array.from({ length: total }, (_, i) => `<i class="${i <= p ? 'on' : ''}"></i>`).join('')}</div>`;
+  let corpo = '', pode = true;
+  if (p === 0) {
+    corpo = `<div style="display:flex;flex-direction:column;align-items:flex-start;gap:16px;margin-top:40px">
+      ${logo()}
+      <h1 class="serif h1" style="font-size:34px">Seu ciclo,<br>seu ritmo.</h1>
+      <p class="muted" style="margin:0;font-size:16px">Um app que entende que você não é igual todo dia. Descubra sua fase e receba sugestões para treino, comida, trabalho e autocuidado.</p>
+      <div class="field" style="width:100%;margin-top:12px"><label for="nome">Como você quer ser chamada?</label>
+      <input class="input" id="nome" autocomplete="given-name" value="${esc(onb.nome)}" placeholder="Seu nome"></div></div>`;
+    pode = onb.nome.trim().length > 0;
+  } else if (p === 1) {
+    corpo = `<h1 class="serif h1 mt24">Quando começou sua última menstruação?</h1>
+      <p class="muted">O primeiro dia do sangramento. Se não lembrar exato, uma data aproximada já ajuda.</p>
+      <div class="field mt16"><label for="ini">Primeiro dia</label><input class="input" type="date" id="ini" max="${iso(hoje())}" value="${onb.inicio}"></div>`;
+    pode = !!onb.inicio;
+  } else if (p === 2) {
+    corpo = `<h1 class="serif h1 mt24">Como costuma ser o seu ciclo?</h1>
+      <p class="muted">Não sabe? Deixe como está. O app ajusta sozinho conforme você registra.</p>
+      <div class="field mt16"><label for="ciclo">Duração do ciclo (dias)</label><input class="input" type="number" inputmode="numeric" min="18" max="45" id="ciclo" value="${onb.ciclo}"></div>
+      <div class="field mt12"><label for="menstr">Duração da menstruação (dias)</label><input class="input" type="number" inputmode="numeric" min="2" max="10" id="menstr" value="${onb.menstruacao}"></div>`;
+    pode = onb.ciclo >= 18 && onb.ciclo <= 45 && onb.menstruacao >= 2 && onb.menstruacao <= 10;
+  } else {
+    corpo = `<h1 class="serif h1 mt24">O que você quer do Meu Ritmo?</h1>
+      <p class="muted">Escolha quantos quiser. Isso define o que aparece primeiro no seu dia.</p>
+      <div class="chips mt16">${OBJETIVOS.map(o => `<button type="button" class="chip ${onb.objetivos.includes(o.id) ? 'on' : ''}" data-obj="${o.id}" aria-pressed="${onb.objetivos.includes(o.id)}">${o.t}</button>`).join('')}</div>
+      <p class="note mt24">O Meu Ritmo é uma ferramenta de autoconhecimento. Não faz diagnóstico, não substitui acompanhamento médico e não é método contraceptivo. Seus dados ficam só neste aparelho.</p>`;
+  }
+  $app.innerHTML = `${steps}${corpo}
+    <div style="display:flex;gap:10px;margin-top:28px">
+      ${p > 0 ? `<button class="btn ghost" style="width:auto;min-width:100px" id="voltar">Voltar</button>` : ''}
+      <button class="btn" id="seguir" ${pode ? '' : 'disabled'}>${p === total - 1 ? 'Começar' : 'Continuar'}</button>
+    </div>`;
+  const on = (id, ev, fn) => { const el = document.getElementById(id); if (el) el.addEventListener(ev, fn); };
+  on('nome', 'input', e => { onb.nome = e.target.value; document.getElementById('seguir').disabled = !onb.nome.trim(); });
+  on('ini', 'change', e => { onb.inicio = e.target.value; renderOnboarding(); });
+  on('ciclo', 'change', e => { onb.ciclo = Number(e.target.value); renderOnboarding(); });
+  on('menstr', 'change', e => { onb.menstruacao = Number(e.target.value); renderOnboarding(); });
+  $app.querySelectorAll('[data-obj]').forEach(b => b.addEventListener('click', () => {
+    const id = b.dataset.obj; onb.objetivos = onb.objetivos.includes(id) ? onb.objetivos.filter(x => x !== id) : [...onb.objetivos, id]; renderOnboarding();
+  }));
+  on('voltar', 'click', () => { onb.passo--; renderOnboarding(); });
+  on('seguir', 'click', () => {
+    if (onb.passo < total - 1) { onb.passo++; renderOnboarding(); return; }
+    if (parse(onb.inicio) > hoje()) { toast('A data não pode ser no futuro.'); return; }
+    data = { perfil: { nome: onb.nome.trim(), ciclo: onb.ciclo, menstruacao: onb.menstruacao, objetivos: onb.objetivos, criadoEm: iso(hoje()) }, registros: {}, inicios: [onb.inicio] };
+    persist(); tela = 'hoje'; render();
+  });
+}
+
+// ---------- Hoje ----------
+function ordemCategorias() {
+  const obj = data.perfil.objetivos.filter(o => CAT[o]);
+  return [...obj, ...Object.keys(CAT).filter(c => !obj.includes(c))];
+}
+function renderHoje() {
+  const d = hoje(), info = infoDia(d), F = FASES[info.fase], c = corFase(info.fase);
+  const prox = diasAteProximaFase(d);
+  const proxTxt = prox ? (prox.fase === 'm' ? `Menstruação prevista em cerca de ${prox.dias} ${prox.dias === 1 ? 'dia' : 'dias'}` : `Fase ${FASES[prox.fase].nome} em cerca de ${prox.dias} ${prox.dias === 1 ? 'dia' : 'dias'}`) : '';
+  const semIni = addDias(d, -d.getDay());
+  const semana = Array.from({ length: 7 }, (_, i) => {
+    const di = addDias(semIni, i), f = infoDia(di).fase, cc = corFase(f), eh = i === d.getDay();
+    return `<div>${SEM[i]}<span class="dot" style="background:${eh ? 'var(--ink)' : cc.soft};color:${eh ? '#fff' : cc.ink}">${di.getDate()}</span></div>`;
+  }).join('');
+  const seed = diasEntre(new Date(2024, 0, 1), d);
+  const cards = ordemCategorias().map(cat => {
+    const lista = SUGESTOES[info.fase][cat], t = lista[seed % lista.length];
+    return `<div class="sug"><div class="row" style="justify-content:flex-start;gap:8px"><span class="ic" style="background:${c.soft};color:${c.ink}">${ico(CAT[cat].path)}</span>
+      <span class="kicker muted" style="font-size:11.5px;letter-spacing:.06em">${CAT[cat].t}</span></div>
+      <span style="font-size:14px;font-weight:500;line-height:1.35">${t}</span></div>`;
+  }).join('');
+  const reg = data.registros[iso(d)];
+  $app.innerHTML = `
+    <div class="row"><div><div class="muted" style="font-size:13px">${dataLonga(d)}</div>
+      <h1 class="serif" style="font-size:26px">${saudacao()}, ${esc(data.perfil.nome)}</h1></div>${logo()}</div>
+    <div class="week mt16">${semana}</div>
+    <div class="phasecard mt20" style="background:${c.cor}">
+      <div class="row" style="align-items:flex-start">
+        <div><div class="kicker" style="opacity:.92">Fase ${F.nome}</div><div class="serif" style="font-size:25px;line-height:1.15;max-width:230px;margin-top:4px">${F.frase}</div></div>
+        <div style="text-align:right"><div class="kicker" style="font-size:11px;opacity:.92">Dia</div><div class="serif" style="font-size:44px;line-height:1;font-weight:600">${pad(info.dia)}</div></div>
+      </div>
+      <div><div class="row" style="font-size:13px;font-weight:500"><span>Energia esperada</span><span>${['', 'Baixa', 'Moderada', 'Boa', 'Alta'][F.energia]}</span></div>
+      <div class="bars mt8">${[1, 2, 3, 4].map(n => `<span class="${n <= F.energia ? 'on' : ''}"></span>`).join('')}</div></div>
+      <div style="font-size:13px;font-weight:500">${proxTxt}${info.previsto ? ' · previsão' : ''}</div>
+    </div>
+    ${info.previsto ? `<p class="note mt8">Sua menstruação passou da data prevista. Se ela já começou, marque abaixo para o app se ajustar.</p>` : ''}
+    <div class="row mt24"><h2 class="serif h2">Seu dia de hoje</h2><button class="chip" style="min-height:36px;border:0;background:none;color:var(--primary-ink);font-weight:600;padding:0" id="vermais">Ver mais</button></div>
+    <div class="grid2 mt12">${cards}</div>
+    <button class="btn mt16" id="registrar">${reg ? ico(I.check) + ' Registro de hoje feito · editar' : ico(I.mais) + ' Como você está hoje?'}</button>
+    <button class="btn ghost mt12" id="menstruou">${ico(I.gota)} Minha menstruação começou hoje</button>`;
+  document.getElementById('registrar').onclick = () => abrirRegistro(iso(d));
+  document.getElementById('vermais').onclick = () => { conteudoFase = info.fase; ir('conteudo'); };
+  document.getElementById('menstruou').onclick = () => marcarInicio(iso(d));
+}
+function saudacao() { const h = new Date().getHours(); return h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite'; }
+function marcarInicio(dia) {
+  if (data.inicios.includes(dia)) { toast('Esse dia já está marcado como início.'); return; }
+  const prox = data.inicios.filter(s => Math.abs(diasEntre(parse(s), parse(dia))) < 10);
+  if (prox.length) data.inicios = data.inicios.filter(s => !prox.includes(s)); // corrige um início próximo
+  data.inicios.push(dia); data.inicios.sort();
+  const r = data.registros[dia] || {}; if (!r.fluxo || r.fluxo === 'Nenhum') r.fluxo = 'Moderado'; data.registros[dia] = r;
+  persist(); toast('Ciclo atualizado.'); render();
+}
+
+// ---------- Registro ----------
+function abrirRegistro(dia) {
+  const atual = data.registros[dia] || {};
+  const r = { energia: atual.energia || 0, humor: [...(atual.humor || [])], sintomas: [...(atual.sintomas || [])], sono: atual.sono || '', fluxo: atual.fluxo || '' };
+  const d = parse(dia), info = infoDia(d), c = corFase(info.fase);
+  const draw = () => {
+    const chips = (lista, sel, grupo) => lista.map(t => `<button type="button" class="chip ${sel.includes(t) ? 'on' : ''}" data-g="${grupo}" data-v="${t}" aria-pressed="${sel.includes(t)}">${t}</button>`).join('');
+    const um = (lista, v, grupo, cols) => `<div class="seg" style="grid-template-columns:repeat(${cols},1fr)">${lista.map(t => `<button type="button" class="chip ${v === t ? 'on' : ''}" data-u="${grupo}" data-v="${t}" aria-pressed="${v === t}" style="padding:0 6px">${t}</button>`).join('')}</div>`;
+    $ov.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" aria-labelledby="regtit"><div class="in">
+      <div class="row"><span class="kicker" style="color:${c.ink}">Dia ${info.dia} · ${FASES[info.fase].titulo}</span>
+      <button class="iconbtn" id="fechar" aria-label="Fechar">${ico(I.x)}</button></div>
+      <h2 class="serif h1 mt8" id="regtit">${dia === iso(hoje()) ? 'Como você está hoje?' : 'Registro de ' + d.getDate() + ' de ' + MESES[d.getMonth()]}</h2>
+      <div class="kicker muted mt20" style="font-size:12px">Energia</div>
+      <div class="seg energy mt8" style="grid-template-columns:repeat(5,1fr)">${ENERGIAS.map((e, i) => `<button type="button" class="${r.energia === i + 1 ? 'on' : ''}" data-e="${i + 1}" aria-pressed="${r.energia === i + 1}"><b>${i + 1}</b>${e}</button>`).join('')}</div>
+      <div class="kicker muted mt20" style="font-size:12px">Humor</div><div class="chips mt8">${chips(HUMORES, r.humor, 'humor')}</div>
+      <div class="kicker muted mt20" style="font-size:12px">Sintomas</div><div class="chips mt8">${chips(SINTOMAS, r.sintomas, 'sintomas')}</div>
+      <div class="kicker muted mt20" style="font-size:12px">Sono</div><div class="mt8">${um(SONOS, r.sono, 'sono', 3)}</div>
+      <div class="kicker muted mt20" style="font-size:12px">Fluxo</div><div class="mt8">${um(FLUXOS, r.fluxo, 'fluxo', 4)}</div>
+      <button class="btn mt24" id="salvar">Salvar registro</button>
+    </div></div>`;
+    $ov.querySelectorAll('[data-e]').forEach(b => b.onclick = () => { r.energia = Number(b.dataset.e); draw(); });
+    $ov.querySelectorAll('[data-g]').forEach(b => b.onclick = () => {
+      const arr = r[b.dataset.g], v = b.dataset.v;
+      if (v === 'Nenhum') { r[b.dataset.g] = arr.includes(v) ? [] : ['Nenhum']; }
+      else { const semN = arr.filter(x => x !== 'Nenhum'); r[b.dataset.g] = semN.includes(v) ? semN.filter(x => x !== v) : [...semN, v]; }
+      draw();
+    });
+    $ov.querySelectorAll('[data-u]').forEach(b => b.onclick = () => { r[b.dataset.u] = r[b.dataset.u] === b.dataset.v ? '' : b.dataset.v; draw(); });
+    document.getElementById('fechar').onclick = fecharSheet;
+    document.getElementById('salvar').onclick = () => {
+      data.registros[dia] = r; persist(); fecharSheet(); toast('Registro salvo.'); render();
+    };
+  };
+  draw();
+}
+function fecharSheet() { $ov.innerHTML = ''; }
+
+// ---------- Calendário ----------
+function renderCalendario() {
+  const ano = calMes.getFullYear(), mes = calMes.getMonth();
+  const ndias = new Date(ano, mes + 1, 0).getDate(), off = new Date(ano, mes, 1).getDay();
+  const hj = iso(hoje());
+  let cells = SEM.map(s => `<div class="wd">${s}</div>`).join('') + '<span></span>'.repeat(off);
+  for (let i = 1; i <= ndias; i++) {
+    const di = new Date(ano, mes, i), k = iso(di), f = infoDia(di).fase, c = corFase(f);
+    const isH = k === hj, isS = k === calSel, fut = di > hoje();
+    const bg = isH ? 'var(--ink)' : c.soft, fg = isH ? '#fff' : c.ink;
+    cells += `<button type="button" data-d="${k}" style="background:${bg};color:${fg};border-color:${isS && !isH ? 'var(--ink)' : 'transparent'};${fut ? 'opacity:.75' : ''}" aria-label="${i} de ${MESES[mes]}, fase ${FASES[f].nome}${data.inicios.includes(k) ? ', início da menstruação' : ''}">${i}${data.registros[k] ? '<i class="reg" aria-hidden="true"></i>' : ''}</button>`;
+  }
+  const sd = parse(calSel), si = infoDia(sd), sc = corFase(si.fase), reg = data.registros[calSel];
+  const prox = proximaMenstruacao(hoje());
+  const ciclo = si.ciclo, ovu = si.ovu, m = data.perfil.menstruacao;
+  const segs = [['m', m], ['f', ovu - 1 - m - 1], ['o', 3], ['l', ciclo - ovu - 1]];
+  const resumo = reg ? [reg.energia ? 'Energia ' + ENERGIAS[reg.energia - 1].toLowerCase() : '', ...(reg.humor || []), ...(reg.sintomas || []).filter(s => s !== 'Nenhum'), reg.fluxo && reg.fluxo !== 'Nenhum' ? 'Fluxo ' + reg.fluxo.toLowerCase() : ''].filter(Boolean).join(' · ') : '';
+  const passado = sd <= hoje();
+  $app.innerHTML = `
+    <div class="row"><div><div class="kicker muted">Seu ciclo</div><h1 class="serif h1">${MESES[mes][0].toUpperCase() + MESES[mes].slice(1)} de ${ano}</h1></div>
+      <div style="display:flex;gap:8px"><button class="iconbtn" id="ant" aria-label="Mês anterior">${ico(I.volta)}</button><button class="iconbtn" id="prox" aria-label="Próximo mês">${ico(I.vai)}</button></div></div>
+    <div class="card mt20" style="padding:16px 10px"><div class="cal">${cells}</div></div>
+    <div class="legend mt16"><div><span style="background:var(--m)"></span>Menstrual</div><div><span style="background:var(--f)"></span>Folicular</div><div><span style="background:var(--o)"></span>Ovulatória</div><div><span style="background:var(--l)"></span>Lútea</div></div>
+    <div class="card mt16" style="display:flex;flex-direction:column;gap:10px">
+      <div class="row"><span class="muted" style="font-size:13px">${dataLonga(sd)}</span><span style="font-size:13px;font-weight:700;color:${sc.ink}">Dia ${si.dia}${sd > hoje() ? ' · previsão' : ''}</span></div>
+      <div class="serif" style="font-size:22px;color:${sc.ink}">Fase ${FASES[si.fase].nome}</div>
+      <div class="pbar" aria-hidden="true">${segs.map(([f, n]) => `<span style="flex:${Math.max(n, 1)};background:var(--${f})"></span>`).join('')}</div>
+      <div style="font-size:13px;color:#4A3E4C">Ciclo médio de ${ciclo} dias · próxima menstruação prevista para ${prox.getDate()} de ${MESES[prox.getMonth()]}</div>
+      ${resumo ? `<div style="font-size:14px">${esc(resumo)}</div>` : ''}
+      ${passado ? `<button class="btn ghost" id="verreg">${reg ? 'Editar registro do dia' : 'Registrar este dia'}</button>
+      ${data.inicios.includes(calSel) ? `<button class="btn ghost" id="desmarcar" style="border-color:var(--line)">Desmarcar início da menstruação</button>` : `<button class="btn ghost" id="marcar" style="border-color:var(--line)">${ico(I.gota)} Menstruação começou neste dia</button>`}` : ''}
+    </div>`;
+  document.getElementById('ant').onclick = () => { calMes = new Date(ano, mes - 1, 1); render(); };
+  document.getElementById('prox').onclick = () => { calMes = new Date(ano, mes + 1, 1); render(); };
+  $app.querySelectorAll('[data-d]').forEach(b => b.onclick = () => { calSel = b.dataset.d; render(); });
+  const vr = document.getElementById('verreg'); if (vr) vr.onclick = () => abrirRegistro(calSel);
+  const mk = document.getElementById('marcar'); if (mk) mk.onclick = () => marcarInicio(calSel);
+  const dm = document.getElementById('desmarcar'); if (dm) dm.onclick = () => {
+    if (data.inicios.length <= 1) { toast('Mantenha pelo menos um início marcado.'); return; }
+    data.inicios = data.inicios.filter(s => s !== calSel); persist(); toast('Início removido.'); render();
+  };
+}
+
+// ---------- Conteúdo ----------
+function renderConteudo() {
+  const f = conteudoFase || infoDia(hoje()).fase, c = corFase(f), L = LEITURAS[f], mv = MOVIMENTO[f];
+  $app.innerHTML = `
+    <div class="kicker" style="color:var(--primary-ink)">Para a sua fase</div><h1 class="serif h1">Conteúdo</h1>
+    <div class="chips mt16">${['m', 'f', 'o', 'l'].map(x => `<button type="button" class="chip ${x === f ? 'on' : ''}" data-f="${x}" aria-pressed="${x === f}" style="min-height:38px">${FASES[x].titulo}</button>`).join('')}</div>
+    <article class="article mt16">
+      <div class="kicker" style="color:#F4B6C3;font-size:11px">Leitura · ${L.min} min</div>
+      <h2 class="serif" style="font-size:24px;line-height:1.15;margin-top:8px">${L.titulo}</h2>
+      ${L.texto.map(p => `<p>${p}</p>`).join('')}
+      <div class="note" style="color:#CDBFCB">Conteúdo em revisão profissional.</div>
+    </article>
+    <h2 class="serif h2 mt24">Receitas da fase</h2>
+    <div class="grid2 mt12">${RECEITAS[f].map(r => `<div class="card" style="padding:0;overflow:hidden"><div style="height:70px;background:var(--soft);display:flex;align-items:center;justify-content:center;color:var(--primary-ink)">${ico(CAT.comida.path, 'style="width:28px;height:28px"')}</div>
+      <div style="padding:12px"><div style="font-size:14px;font-weight:600;line-height:1.3">${r.t}</div><div class="muted" style="font-size:12px;margin-top:4px">${r.tag}</div></div></div>`).join('')}</div>
+    <h2 class="serif h2 mt24">Movimento da fase</h2>
+    <div class="listitem mt12"><span style="width:52px;height:52px;border-radius:16px;background:${c.soft};color:${c.ink};display:flex;align-items:center;justify-content:center;flex-shrink:0">${ico(CAT.treino.path)}</span>
+      <div style="flex:1"><div style="font-size:15px;font-weight:600">${mv.t}</div><div class="muted" style="font-size:12px">${mv.d}</div></div></div>
+    <h2 class="serif h2 mt24">Ideias para esta fase</h2>
+    <div class="card mt12">${Object.keys(CAT).map(cat => `<div class="mt12"><div class="kicker muted" style="font-size:11.5px">${CAT[cat].t}</div><ul style="margin:6px 0 0;padding-left:18px;font-size:14px">${SUGESTOES[f][cat].map(s => `<li>${s}</li>`).join('')}</ul></div>`).join('')}</div>`;
+  $app.querySelectorAll('[data-f]').forEach(b => b.onclick = () => { conteudoFase = b.dataset.f; render(); });
+}
+
+// ---------- Você ----------
+function padroes() {
+  const soma = { m: [], f: [], o: [], l: [] };
+  Object.entries(data.registros).forEach(([k, r]) => { if (r.energia) soma[infoDia(parse(k)).fase].push(r.energia); });
+  return soma;
+}
+function renderVoce() {
+  const p = data.perfil, pd = padroes(), total = Object.values(pd).reduce((a, b) => a + b.length, 0);
+  const linhas = ['m', 'f', 'o', 'l'].map(f => {
+    const a = pd[f], media = a.length ? a.reduce((x, y) => x + y, 0) / a.length : 0;
+    return `<div class="statrow mt8"><span>${FASES[f].titulo}</span><span class="track"><i style="width:${media / 5 * 100}%;background:var(--${f})"></i></span><span class="muted">${a.length ? media.toFixed(1) : '–'}</span></div>`;
+  }).join('');
+  $app.innerHTML = `
+    <div class="row"><div><div class="kicker muted">Perfil</div><h1 class="serif h1">${esc(p.nome)}</h1></div>${logo()}</div>
+    <div class="card mt20"><h2 class="serif h2">Seus padrões</h2>
+      <p class="muted" style="font-size:14px;margin:6px 0 4px">Sua energia média registrada em cada fase (1 a 5).</p>
+      ${linhas}
+      <p class="note mt12">${total < 10 ? `Você tem ${total} ${total === 1 ? 'registro' : 'registros'} de energia. Com 2 ou 3 ciclos registrando, seus padrões ficam bem mais claros.` : 'Compare com o que a teoria diz para cada fase: o seu corpo é a melhor referência.'}</p></div>
+    <div class="card mt16"><h2 class="serif h2">Seu ciclo</h2>
+      <div class="grid2 mt12">
+        <div class="field"><label for="pc">Ciclo (dias)</label><input class="input" id="pc" type="number" inputmode="numeric" min="18" max="45" value="${p.ciclo}"></div>
+        <div class="field"><label for="pm">Menstruação (dias)</label><input class="input" id="pm" type="number" inputmode="numeric" min="2" max="10" value="${p.menstruacao}"></div>
+      </div>
+      <p class="note mt8">Ciclo usado nas previsões: ${duracaoCiclo()} dias${data.inicios.length >= 2 ? ' (calculado pelos seus registros)' : ''}.</p>
+      <div class="kicker muted mt16" style="font-size:12px">Objetivos</div>
+      <div class="chips mt8">${OBJETIVOS.map(o => `<button type="button" class="chip ${p.objetivos.includes(o.id) ? 'on' : ''}" data-obj="${o.id}" aria-pressed="${p.objetivos.includes(o.id)}">${o.t}</button>`).join('')}</div>
+      <button class="btn mt16" id="salvarperfil">Salvar alterações</button></div>
+    <div class="card mt16"><h2 class="serif h2">Privacidade</h2>
+      <p class="muted" style="font-size:14px">Neste protótipo, tudo fica guardado só neste aparelho e neste navegador. Nada é enviado para a internet.</p>
+      <button class="btn ghost mt8" id="apagar">Apagar todos os meus dados</button></div>
+    <p class="note mt16">O Meu Ritmo é uma ferramenta de autoconhecimento e não substitui acompanhamento médico. Procure uma profissional se tiver dor forte, sangramento fora do padrão ou ciclos muito irregulares. Não use o app como método contraceptivo.</p>
+    <p class="note">Meu Ritmo · protótipo v0.1</p>`;
+  $app.querySelectorAll('[data-obj]').forEach(b => b.onclick = () => {
+    const id = b.dataset.obj; p.objetivos = p.objetivos.includes(id) ? p.objetivos.filter(x => x !== id) : [...p.objetivos, id];
+    b.classList.toggle('on'); b.setAttribute('aria-pressed', p.objetivos.includes(id));
+  });
+  document.getElementById('salvarperfil').onclick = () => {
+    const c = Number(document.getElementById('pc').value), m = Number(document.getElementById('pm').value);
+    if (!(c >= 18 && c <= 45) || !(m >= 2 && m <= 10)) { toast('Confira os números: ciclo entre 18 e 45, menstruação entre 2 e 10.'); return; }
+    p.ciclo = c; p.menstruacao = m; persist(); toast('Alterações salvas.'); render();
+  };
+  document.getElementById('apagar').onclick = () => confirmarApagar();
+}
+function confirmarApagar() {
+  $ov.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" aria-labelledby="aptit"><div class="in">
+    <h2 class="serif h1" id="aptit">Apagar tudo?</h2>
+    <p class="muted">Seus registros, ciclos e perfil serão apagados deste aparelho. Isso não pode ser desfeito.</p>
+    <button class="btn mt16" id="sim" style="background:#8E2F45">Sim, apagar tudo</button>
+    <button class="btn ghost mt12" id="nao">Cancelar</button></div></div>`;
+  document.getElementById('nao').onclick = fecharSheet;
+  document.getElementById('sim').onclick = () => {
+    store.clear(); data = { perfil: null, registros: {}, inicios: [] };
+    onb = { passo: 0, nome: '', inicio: '', ciclo: 28, menstruacao: 5, objetivos: [] };
+    fecharSheet(); render();
+  };
+}
+
+// ---------- Navegação ----------
+const TABS = [['hoje', 'Hoje', I.sol], ['calendario', 'Calendário', I.cal], ['conteudo', 'Conteúdo', I.livro], ['voce', 'Você', I.user]];
+function ir(t) { tela = t; if (t !== 'conteudo') conteudoFase = null; render(); window.scrollTo(0, 0); }
+function renderTabs() {
+  $tabs.hidden = false;
+  $tabs.innerHTML = TABS.map(([id, t, p]) => `<button type="button" class="${tela === id ? 'on' : ''}" data-t="${id}" ${tela === id ? 'aria-current="page"' : ''}>${ico(p)}${t}</button>`).join('');
+  $tabs.querySelectorAll('[data-t]').forEach(b => b.onclick = () => ir(b.dataset.t));
+}
+function render() {
+  if (!data.perfil) { renderOnboarding(); return; }
+  renderTabs();
+  ({ hoje: renderHoje, calendario: renderCalendario, conteudo: renderConteudo, voce: renderVoce })[tela]();
+}
+render();
+</script>
+</body>
+</html>
