@@ -49,7 +49,8 @@ h1,h2,h3{margin:0}
 .icon{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .iconbtn{width:44px;height:44px;border-radius:22px;border:0;background:#fff;display:flex;align-items:center;justify-content:center;color:var(--ink);box-shadow:0 1px 3px rgba(42,31,45,.08)}
 nav.tabs{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom) + 14px);width:min(408px,calc(100% - 32px));height:66px;border-radius:33px;background:#fff;box-shadow:0 6px 24px rgba(42,31,45,.12);display:grid;grid-template-columns:repeat(4,1fr);z-index:10}
-nav.tabs button{border:0;background:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11px;font-weight:500;color:var(--muted)}
+nav.tabs[hidden]{display:none}
+  nav.tabs button{border:0;background:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11px;font-weight:500;color:var(--muted)}
 nav.tabs button.on{color:var(--primary-ink);font-weight:700}
 .phasecard{border-radius:28px;padding:22px;color:#fff;display:flex;flex-direction:column;gap:14px}
 .bars{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
