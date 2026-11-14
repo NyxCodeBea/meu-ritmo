@@ -33,6 +33,24 @@ button{cursor:pointer}
 .card{background:var(--card);border-radius:22px;padding:16px}
 h1,h2,h3{margin:0}
 .h1{font-size:28px;line-height:1.12}
+.listrow{display:flex;align-items:center;gap:14px;width:100%;min-height:60px;padding:10px 16px;border:0;background:none;position:relative;font:inherit;color:inherit;text-align:left}
+.listrow + .listrow{border-top:1px solid var(--line)}
+.listrow[aria-disabled=true]{opacity:.7}
+.lic{width:36px;height:36px;border-radius:12px;background:var(--soft);color:var(--primary-ink);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.lic svg{width:19px;height:19px}
+.lt{display:block;font-size:15px;font-weight:600}
+.ls{display:block;font-size:12.5px;color:var(--muted);margin-top:1px}
+.tag{font-size:11px;font-weight:700;padding:4px 9px;border-radius:10px;background:var(--soft);color:var(--primary-ink);white-space:nowrap}
+.sw{appearance:none;-webkit-appearance:none;width:50px;height:30px;border-radius:15px;background:var(--line);position:relative;flex-shrink:0;cursor:pointer;transition:background .2s}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:12px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:left .2s}
+.sw:checked{background:var(--primary)}.sw:checked::after{left:23px}
+.sw:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stat{padding:14px 10px;text-align:center;display:flex;flex-direction:column;gap:2px}
+.stat b{font-size:26px;font-weight:600;color:var(--primary-ink)}.stat span{font-size:11.5px;color:var(--muted);line-height:1.25}
+.premium{border-radius:24px;padding:18px;color:#fff;background:linear-gradient(135deg,#B44C66,#D9788F)}
+.filtros{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.filtros .chip{padding:0 4px;font-size:13.5px;min-height:40px;white-space:nowrap}
 .fit{white-space:nowrap;overflow:hidden;text-overflow:clip;min-width:0}
 .h2{font-size:21px}
 .mt8{margin-top:8px}.mt12{margin-top:12px}.mt16{margin-top:16px}.mt20{margin-top:20px}.mt24{margin-top:24px}
@@ -149,7 +167,7 @@ const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;'
 // Duração média: usa os inícios registrados (se houver 2+), senão a informada no cadastro.
 function duracaoCiclo() {
   const ini = [...data.inicios].sort();
-  if (ini.length >= 2) {
+  if (ini.length >= 2 && (!data.perfil.prefs || data.perfil.prefs.media !== false)) {
     const gaps = [];
     for (let i = 1; i < ini.length; i++) { const g = diasEntre(parse(ini[i - 1]), parse(ini[i])); if (g >= 18 && g <= 45) gaps.push(g); }
     const ult = gaps.slice(-6);
@@ -242,19 +260,19 @@ const CAT = {
   cuidado: { t: 'Cuidado', path: 'M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z' }
 };
 const LEITURAS = {
-  m: { titulo: 'Por que o corpo pede pausa nos primeiros dias', min: 3, texto: [
+  m: { titulo: 'O corpo pede pausa', min: 3, texto: [
     'No começo do ciclo, os hormônios estrogênio e progesterona estão nos níveis mais baixos do mês. Muitas mulheres sentem menos energia, cólica ou vontade de ficar mais quietas.',
     'Isso não é preguiça: é um momento em que o corpo está trabalhando. Movimentos leves, calor no abdômen, hidratação e sono costumam ajudar.',
     'Cada mulher sente de um jeito. Se a dor atrapalha sua rotina ou o fluxo é muito intenso, vale conversar com sua ginecologista.'] },
-  f: { titulo: 'Por que muitas mulheres sentem mais energia nesta fase', min: 4, texto: [
+  f: { titulo: 'A energia volta', min: 4, texto: [
     'Depois da menstruação, o estrogênio começa a subir. Para muitas mulheres, isso vem acompanhado de mais disposição, foco e vontade de começar coisas novas.',
     'É um bom momento para planejar, experimentar treinos diferentes e tirar ideias do papel, sem a obrigação de render o máximo todos os dias.',
     'Registre como você se sente: com alguns ciclos, o app mostra se esse padrão vale para você.'] },
-  o: { titulo: 'Ovulação: o pico do mês', min: 3, texto: [
+  o: { titulo: 'O pico do mês', min: 3, texto: [
     'Perto da ovulação, o estrogênio chega ao ponto mais alto. Muitas mulheres se sentem mais comunicativas, confiantes e com mais energia para treinos intensos.',
     'Aproveite para conversas importantes, apresentações e encontros. Lembre de aquecer bem antes de treinos fortes.',
     'Importante: este app não é método contraceptivo nem serve para planejar ou evitar gravidez.'] },
-  l: { titulo: 'Fase lútea: desacelerar sem culpa', min: 4, texto: [
+  l: { titulo: 'Desacelerar sem culpa', min: 4, texto: [
     'Depois da ovulação, a progesterona sobe. É comum sentir mais fome, inchaço, sono diferente e, perto da menstruação, sintomas de TPM.',
     'Rotina previsível ajuda: refeições planejadas com proteína e fibras, treinos moderados, menos cafeína à tarde e mais cuidado com o sono.',
     'Se a TPM afeta muito seu humor ou sua vida, isso merece atenção profissional. Você não precisa só aguentar.'] }
@@ -506,7 +524,7 @@ function renderCalendario() {
     const di = new Date(ano, mes, i), k = iso(di), inf = infoDia(di), f = inf.fase, c = corFase(f);
     const isH = k === hj, isS = k === calSel, fut = di > hoje();
     const bg = isH ? 'var(--ink)' : c.soft, fg = isH ? '#fff' : c.ink;
-    cells += `<button type="button" data-d="${k}" style="background:${bg};color:${fg};border-color:${isS && !isH ? 'var(--ink)' : 'transparent'};${fut ? 'opacity:.75' : ''}" aria-label="${i} de ${MESES[mes]}, fase ${FASES[f].nome}${data.inicios.includes(k) ? ', início da menstruação' : ''}">${i}${f === 'm' ? `<svg class="gota" viewBox="0 0 24 24" aria-hidden="true"><path d="${I.gota}" fill="${!inf.previsto && di <= hoje() ? 'currentColor' : '#fff'}" stroke="currentColor" stroke-width="2.2"/></svg>` : ''}<small aria-hidden="true">${inf.dia}</small>${data.registros[k] ? '<i class="reg" aria-hidden="true"></i>' : ''}</button>`;
+    cells += `<button type="button" data-d="${k}" style="background:${bg};color:${fg};border-color:${isS && !isH ? 'var(--ink)' : 'transparent'};${fut ? 'opacity:.75' : ''}" aria-label="${i} de ${MESES[mes]}, fase ${FASES[f].nome}${data.inicios.includes(k) ? ', início da menstruação' : ''}">${i}${f === 'm' ? `<svg class="gota" viewBox="0 0 24 24" aria-hidden="true"><path d="${I.gota}" fill="${!inf.previsto && di <= hoje() ? 'currentColor' : '#fff'}" stroke="currentColor" stroke-width="2.2"/></svg>` : ''}${prefs().diaCiclo ? `<small aria-hidden="true">${inf.dia}</small>` : ''}${data.registros[k] ? '<i class="reg" aria-hidden="true"></i>' : ''}</button>`;
   }
   const sd = parse(calSel), si = infoDia(sd), sc = corFase(si.fase), reg = data.registros[calSel];
   const prox = proximaMenstruacao(hoje());
@@ -546,10 +564,10 @@ function renderConteudo() {
   const f = conteudoFase || infoDia(hoje()).fase, c = corFase(f), L = LEITURAS[f], mv = MOVIMENTO[f];
   $app.innerHTML = `
     <div class="kicker" style="color:var(--primary-ink)">Para a sua fase</div><h1 class="serif h1 fit">Conteúdo</h1>
-    <div class="chips mt16">${['m', 'f', 'o', 'l'].map(x => `<button type="button" class="chip ${x === f ? 'on' : ''}" data-f="${x}" aria-pressed="${x === f}" style="min-height:38px">${FASES[x].titulo}</button>`).join('')}</div>
+    <div class="filtros mt16">${['m', 'f', 'o', 'l'].map(x => `<button type="button" class="chip ${x === f ? 'on' : ''}" data-f="${x}" aria-pressed="${x === f}">${FASES[x].titulo}</button>`).join('')}</div>
     <article class="article mt16">
       <div class="kicker" style="color:#F4B6C3;font-size:11px">Leitura · ${L.min} min</div>
-      <h2 class="serif" style="font-size:24px;line-height:1.15;margin-top:8px">${L.titulo}</h2>
+      <h2 class="serif fit" style="font-size:24px;line-height:1.15;margin-top:8px">${L.titulo}</h2>
       ${L.texto.map(p => `<p>${p}</p>`).join('')}
       <div class="note" style="color:#CDBFCB">Conteúdo em revisão profissional.</div>
     </article>
@@ -570,42 +588,182 @@ function padroes() {
   Object.entries(data.registros).forEach(([k, r]) => { if (r.energia) soma[infoDia(parse(k)).fase].push(r.energia); });
   return soma;
 }
+const prefs = () => Object.assign({ media: true, diaCiclo: true }, data.perfil.prefs || {});
+const VERSAO = 'v0.8';
+let voceSub = null;
+const IV = {
+  ciclo: 'M12 3a9 9 0 1 0 9 9M12 3v4M21 12h-4',
+  hist: 'M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5M12 7v5l3 2',
+  alvo: 'M12 21a9 9 0 1 1 0-18 9 9 0 0 1 0 18zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8z',
+  pessoa: 'M12 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM4 21c1.5-4 4.5-6 8-6s6.5 2 8 6',
+  sino: 'M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10 21a2 2 0 0 0 4 0',
+  baixar: 'M12 3v12M7 10l5 5 5-5M5 21h14',
+  subir: 'M12 21V9M7 14l5-5 5 5M5 3h14',
+  lixo: 'M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3',
+  coracao: 'M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z',
+  info: 'M12 21a9 9 0 1 1 0-18 9 9 0 0 1 0 18zM12 11v5M12 8h.01',
+  escudo: 'M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z'
+};
+const item = (id, icone, titulo, sub, extra = '') => `<button type="button" class="listrow" data-sub="${id}">
+  <span class="lic">${ico(icone)}</span><span style="flex:1;min-width:0;text-align:left"><span class="lt">${titulo}</span>${sub ? `<span class="ls">${sub}</span>` : ''}</span>${extra || ico(I.vai, 'style="width:18px;height:18px;color:var(--muted)"')}</button>`;
+const secao = (t, itens) => `<div class="kicker muted mt24" style="font-size:12px;margin-left:4px">${t}</div><div class="card mt8" style="padding:4px 0">${itens}</div>`;
+const voltarTopo = t => `<div class="row" style="justify-content:flex-start;gap:12px"><button class="iconbtn" id="vvoltar" aria-label="Voltar">${ico(I.volta)}</button><h1 class="serif h1 fit" style="flex:1">${t}</h1></div>`;
+const toggle = (id, on, titulo, sub) => `<label class="listrow" style="cursor:pointer"><span style="flex:1;min-width:0"><span class="lt">${titulo}</span><span class="ls">${sub}</span></span>
+  <input type="checkbox" class="sw" id="${id}" ${on ? 'checked' : ''}></label>`;
+
 function renderVoce() {
+  if (voceSub) return ({ ciclo: subCiclo, historico: subHistorico, objetivos: subObjetivos, perfil: subPerfil, dados: subDados, sobre: subSobre })[voceSub]();
   const p = data.perfil, pd = padroes(), total = Object.values(pd).reduce((a, b) => a + b.length, 0);
   const linhas = ['m', 'f', 'o', 'l'].map(f => {
     const a = pd[f], media = a.length ? a.reduce((x, y) => x + y, 0) / a.length : 0;
     return `<div class="statrow mt8"><span>${FASES[f].titulo}</span><span class="track"><i style="width:${media / 5 * 100}%;background:var(--${f})"></i></span><span class="muted">${a.length ? media.toFixed(1) : '–'}</span></div>`;
   }).join('');
+  const desde = parse(p.criadoEm || iso(hoje()));
+  const nRegs = Object.keys(data.registros).length;
   $app.innerHTML = `
-    <div class="row"><div style="flex:1;min-width:0"><div class="kicker muted">Perfil</div><h1 class="serif h1 fit">${esc(p.nome)}</h1></div>${logo()}</div>
-    <div class="card mt20"><h2 class="serif h2">Seus padrões</h2>
-      <p class="muted" style="font-size:14px;margin:6px 0 4px">Sua energia média registrada em cada fase (1 a 5).</p>
+    <div class="row" style="justify-content:flex-start;gap:14px">
+      <span style="width:60px;height:60px;border-radius:30px;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-family:Fraunces,serif;font-size:26px;flex-shrink:0">${esc(p.nome.trim()[0] || '?').toUpperCase()}</span>
+      <div style="flex:1;min-width:0"><h1 class="serif h1 fit">${esc(p.nome)}</h1><div class="muted" style="font-size:13px">No Meu Ritmo desde ${MESES[desde.getMonth()]} de ${desde.getFullYear()}</div></div>
+    </div>
+    <div class="grid3 mt16">
+      <div class="card stat"><b class="serif">${duracaoCiclo()}</b><span>dias de ciclo</span></div>
+      <div class="card stat"><b class="serif">${data.inicios.length}</b><span>${data.inicios.length === 1 ? 'ciclo marcado' : 'ciclos marcados'}</span></div>
+      <div class="card stat"><b class="serif">${nRegs}</b><span>${nRegs === 1 ? 'dia registrado' : 'dias registrados'}</span></div>
+    </div>
+    <div class="premium mt16">
+      <div class="row" style="justify-content:flex-start;gap:12px">${logo(40)}<div><div class="serif fit" style="font-size:20px">Meu Ritmo Premium</div><div style="font-size:13px;opacity:.9">Em breve</div></div></div>
+      <p style="margin:12px 0 0;font-size:14px;opacity:.95">Lembretes, relatórios do ciclo, análises avançadas e conteúdo exclusivo para cada fase.</p>
+    </div>
+    <div class="card mt16"><h2 class="serif h2 fit">Seus padrões</h2>
+      <p class="muted" style="font-size:14px;margin:6px 0 4px">Energia média por fase, de 1 a 5.</p>
       ${linhas}
-      <p class="note mt12">${total < 10 ? `Você tem ${total} ${total === 1 ? 'registro' : 'registros'} de energia. Com 2 ou 3 ciclos registrando, seus padrões ficam bem mais claros.` : 'Compare com o que a teoria diz para cada fase: o seu corpo é a melhor referência.'}</p></div>
-    <div class="card mt16"><h2 class="serif h2">Seu ciclo</h2>
-      <div class="grid2 mt12">
+      <p class="note mt12">${total < 10 ? `${total} ${total === 1 ? 'registro' : 'registros'} de energia até agora. Com 2 ou 3 ciclos, seu padrão fica claro.` : 'Compare com a teoria de cada fase: o seu corpo é a melhor referência.'}</p></div>
+    ${secao('Ciclo', item('ciclo', IV.ciclo, 'Ciclo e menstruação', `${duracaoCiclo()} dias de ciclo · ${p.menstruacao} de menstruação`) + item('historico', IV.hist, 'Histórico de ciclos', 'Datas de início e duração de cada ciclo') + item('objetivos', IV.alvo, 'Objetivos', `${p.objetivos.length} ${p.objetivos.length === 1 ? 'escolhido' : 'escolhidos'}`))}
+    ${secao('Conta', item('perfil', IV.pessoa, 'Seu perfil', 'Nome e data de nascimento') + `<div class="listrow" aria-disabled="true"><span class="lic">${ico(IV.sino)}</span><span style="flex:1"><span class="lt">Lembretes</span><span class="ls">Menstruação chegando, pílula e água</span></span><span class="tag">Em breve</span></div>`)}
+    ${secao('Seus dados', item('dados', IV.escudo, 'Backup e privacidade', 'Salvar cópia, restaurar e apagar'))}
+    ${secao('Meu Ritmo', `<button type="button" class="listrow" id="indicar"><span class="lic">${ico(IV.coracao)}</span><span style="flex:1;text-align:left"><span class="lt">Indicar para uma amiga</span><span class="ls">Compartilhar o link do app</span></span>${ico(I.vai, 'style="width:18px;height:18px;color:var(--muted)"')}</button>` + item('sobre', IV.info, 'Sobre o Meu Ritmo', `Versão ${VERSAO} · aviso de saúde`))}
+    <div style="height:12px"></div>`;
+  $app.querySelectorAll('[data-sub]').forEach(b => b.onclick = () => { voceSub = b.dataset.sub; render(); window.scrollTo(0, 0); });
+  document.getElementById('indicar').onclick = async () => {
+    const url = location.href.split('#')[0].split('?')[0];
+    try { if (navigator.share) { await navigator.share({ title: 'Meu Ritmo', text: 'Seu ciclo, seu ritmo. Conheça o Meu Ritmo:', url }); return; } } catch (e) { return; }
+    try { await navigator.clipboard.writeText(url); toast('Link copiado.'); } catch (e) { toast(url); }
+  };
+}
+function ligarVoltar() { document.getElementById('vvoltar').onclick = () => { voceSub = null; render(); window.scrollTo(0, 0); }; }
+
+function subCiclo() {
+  const p = data.perfil, pr = prefs();
+  $app.innerHTML = `${voltarTopo('Ciclo e menstruação')}
+    <div class="card mt20">
+      <div class="grid2">
         <div class="field"><label for="pc">Ciclo (dias)</label><input class="input" id="pc" type="number" inputmode="numeric" min="18" max="45" value="${p.ciclo}"></div>
         <div class="field"><label for="pm">Menstruação (dias)</label><input class="input" id="pm" type="number" inputmode="numeric" min="2" max="10" value="${p.menstruacao}"></div>
       </div>
-      <p class="note mt8">Ciclo usado nas previsões: ${duracaoCiclo()} dias${data.inicios.length >= 2 ? ' (calculado pelos seus registros)' : ''}.</p>
-      <div class="kicker muted mt16" style="font-size:12px">Objetivos</div>
-      <div class="chips mt8">${OBJETIVOS.map(o => `<button type="button" class="chip ${p.objetivos.includes(o.id) ? 'on' : ''}" data-obj="${o.id}" aria-pressed="${p.objetivos.includes(o.id)}">${o.t}</button>`).join('')}</div>
-      <button class="btn mt16" id="salvarperfil">Salvar alterações</button></div>
-    <div class="card mt16"><h2 class="serif h2">Privacidade</h2>
-      <p class="muted" style="font-size:14px">Neste protótipo, tudo fica guardado só neste aparelho e neste navegador. Nada é enviado para a internet.</p>
-      <button class="btn ghost mt8" id="apagar">Apagar todos os meus dados</button></div>
-    <p class="note mt16">O Meu Ritmo é uma ferramenta de autoconhecimento e não substitui acompanhamento médico. Procure uma profissional se tiver dor forte, sangramento fora do padrão ou ciclos muito irregulares. Não use o app como método contraceptivo.</p>
-    <p class="note">Meu Ritmo · protótipo v0.1</p>`;
+      <p class="note mt8">Usado nas previsões agora: ${duracaoCiclo()} dias${pr.media && data.inicios.length >= 2 ? ', pela média dos seus ciclos' : ''}.</p>
+      <button class="btn mt12" id="salvarciclo">Salvar</button>
+    </div>
+    <div class="card mt16" style="padding:4px 0">
+      ${toggle('tmedia', pr.media, 'Usar a média dos meus ciclos', 'Com 2 ou mais ciclos marcados, a previsão usa a sua média real')}
+      ${toggle('tdia', pr.diaCiclo, 'Dia do ciclo no calendário', 'Mostra o número pequeno embaixo de cada data')}
+    </div>`;
+  ligarVoltar();
+  const salvaPref = (k, v) => { data.perfil.prefs = Object.assign(prefs(), { [k]: v }); persist(); toast('Preferência salva.'); render(); };
+  document.getElementById('tmedia').onchange = e => salvaPref('media', e.target.checked);
+  document.getElementById('tdia').onchange = e => salvaPref('diaCiclo', e.target.checked);
+  document.getElementById('salvarciclo').onclick = () => {
+    const c = Number(document.getElementById('pc').value), m = Number(document.getElementById('pm').value);
+    if (!(c >= 18 && c <= 45) || !(m >= 2 && m <= 10)) { toast('Ciclo entre 18 e 45 dias, menstruação entre 2 e 10.'); return; }
+    p.ciclo = c; p.menstruacao = m; persist(); toast('Salvo.'); render();
+  };
+}
+function subHistorico() {
+  const ini = [...data.inicios].sort().reverse();
+  const linhas = ini.map((k, i) => {
+    const d = parse(k), prox = i > 0 ? parse(ini[i - 1]) : null, dur = prox ? diasEntre(d, prox) : null;
+    return `<div class="listrow"><span class="lic" style="color:var(--m)">${ico(I.gota)}</span><span style="flex:1;min-width:0"><span class="lt">${d.getDate()} de ${MESES[d.getMonth()]} de ${d.getFullYear()}</span>
+      <span class="ls">${dur ? 'Ciclo de ' + dur + ' dias' : 'Ciclo atual · dia ' + (diasEntre(d, hoje()) + 1)}</span></span>
+      ${ini.length > 1 ? `<button class="iconbtn" data-del="${k}" aria-label="Remover ${d.getDate()} de ${MESES[d.getMonth()]}" style="box-shadow:none;color:var(--muted)">${ico(IV.lixo)}</button>` : ''}</div>`;
+  }).join('');
+  $app.innerHTML = `${voltarTopo('Histórico de ciclos')}
+    <p class="muted mt16" style="margin-bottom:0">Cada data é o primeiro dia de uma menstruação. Para adicionar uma data, use o calendário.</p>
+    <div class="card mt12" style="padding:4px 0">${linhas}</div>
+    <button class="btn ghost mt16" id="iracal">${ico(I.cal)} Abrir o calendário</button>`;
+  ligarVoltar();
+  document.getElementById('iracal').onclick = () => { voceSub = null; ir('calendario'); };
+  $app.querySelectorAll('[data-del]').forEach(b => b.onclick = () => {
+    data.inicios = data.inicios.filter(s => s !== b.dataset.del); persist(); toast('Data removida.'); render();
+  });
+}
+function subObjetivos() {
+  const p = data.perfil;
+  $app.innerHTML = `${voltarTopo('Objetivos')}
+    <p class="muted mt16">O que você escolher aparece primeiro no seu dia.</p>
+    <div class="chips mt12">${OBJETIVOS.map(o => `<button type="button" class="chip ${p.objetivos.includes(o.id) ? 'on' : ''}" data-obj="${o.id}" aria-pressed="${p.objetivos.includes(o.id)}">${o.t}</button>`).join('')}</div>`;
+  ligarVoltar();
   $app.querySelectorAll('[data-obj]').forEach(b => b.onclick = () => {
     const id = b.dataset.obj; p.objetivos = p.objetivos.includes(id) ? p.objetivos.filter(x => x !== id) : [...p.objetivos, id];
-    b.classList.toggle('on'); b.setAttribute('aria-pressed', p.objetivos.includes(id));
+    persist(); render();
   });
-  document.getElementById('salvarperfil').onclick = () => {
-    const c = Number(document.getElementById('pc').value), m = Number(document.getElementById('pm').value);
-    if (!(c >= 18 && c <= 45) || !(m >= 2 && m <= 10)) { toast('Confira os números: ciclo entre 18 e 45, menstruação entre 2 e 10.'); return; }
-    p.ciclo = c; p.menstruacao = m; persist(); toast('Alterações salvas.'); render();
+}
+function subPerfil() {
+  const p = data.perfil;
+  $app.innerHTML = `${voltarTopo('Seu perfil')}
+    <div class="card mt20">
+      <div class="field"><label for="pnome">Nome</label><input class="input" id="pnome" autocomplete="name" value="${esc(p.nome)}"></div>
+      <div class="field mt12"><label for="pnasc">Data de nascimento (opcional)</label><input class="input" id="pnasc" type="date" max="${iso(hoje())}" value="${p.nascimento || ''}"></div>
+      <button class="btn mt16" id="salvarp">Salvar</button>
+    </div>`;
+  ligarVoltar();
+  document.getElementById('salvarp').onclick = () => {
+    const n = document.getElementById('pnome').value.trim();
+    if (!n) { toast('Escreva seu nome.'); return; }
+    p.nome = n; p.nascimento = document.getElementById('pnasc').value || ''; persist(); toast('Perfil salvo.'); voceSub = null; render();
+  };
+}
+function subDados() {
+  $app.innerHTML = `${voltarTopo('Backup e privacidade')}
+    <div class="card mt20"><h2 class="serif h2 fit">Onde ficam seus dados</h2>
+      <p class="muted" style="font-size:14px;margin-bottom:0">Tudo fica guardado só neste aparelho. Nada é enviado para a internet. Por isso, salve uma cópia de vez em quando: se você trocar de celular ou apagar o app, é ela que traz seus registros de volta.</p></div>
+    <div class="card mt16" style="padding:4px 0">
+      <button type="button" class="listrow" id="exportar"><span class="lic">${ico(IV.baixar)}</span><span style="flex:1;text-align:left"><span class="lt">Salvar uma cópia</span><span class="ls">Baixa um arquivo com todos os seus registros</span></span></button>
+      <label class="listrow" style="cursor:pointer"><span class="lic">${ico(IV.subir)}</span><span style="flex:1"><span class="lt">Restaurar uma cópia</span><span class="ls">Escolha o arquivo salvo antes</span></span><input type="file" id="importar" accept=".json,application/json" style="position:absolute;opacity:0;width:1px;height:1px"></label>
+    </div>
+    <button class="btn ghost mt16" id="apagar" style="color:#8E2F45">${ico(IV.lixo)} Apagar todos os meus dados</button>`;
+  ligarVoltar();
+  document.getElementById('exportar').onclick = () => {
+    const blob = new Blob([JSON.stringify({ app: 'meu-ritmo', versao: 1, salvoEm: new Date().toISOString(), dados: data }, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'meu-ritmo-backup-' + iso(hoje()) + '.json';
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  };
+  document.getElementById('importar').onchange = async e => {
+    const f = e.target.files[0]; if (!f) return;
+    try {
+      const j = JSON.parse(await f.text());
+      const d = j.dados || j;
+      if (!d.perfil || !Array.isArray(d.inicios) || typeof d.registros !== 'object') throw new Error();
+      confirmarRestaurar(d);
+    } catch (err) { toast('Esse arquivo não é uma cópia do Meu Ritmo.'); }
   };
   document.getElementById('apagar').onclick = () => confirmarApagar();
+}
+function confirmarRestaurar(d) {
+  $ov.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" aria-labelledby="rtit"><div class="in">
+    <h2 class="serif h1 fit" id="rtit">Restaurar cópia?</h2>
+    <p class="muted">Os dados atuais deste aparelho serão trocados pelos da cópia: ${d.inicios.length} ${d.inicios.length === 1 ? 'ciclo' : 'ciclos'} e ${Object.keys(d.registros).length} dias registrados.</p>
+    <button class="btn mt16" id="rsim">Restaurar</button><button class="btn ghost mt12" id="rnao">Cancelar</button></div></div>`;
+  document.getElementById('rnao').onclick = fecharSheet;
+  document.getElementById('rsim').onclick = () => { data = d; persist(); fecharSheet(); voceSub = null; toast('Cópia restaurada.'); render(); };
+}
+function subSobre() {
+  $app.innerHTML = `${voltarTopo('Sobre')}
+    <div class="card mt20" style="display:flex;align-items:center;gap:14px">${logo(56)}<div><div class="serif" style="font-size:22px">Meu Ritmo</div><div class="muted" style="font-size:13px">Seu ciclo, seu ritmo. · ${VERSAO}</div></div></div>
+    <div class="card mt16"><h2 class="serif h2 fit">Aviso de saúde</h2>
+      <p class="muted" style="font-size:14px">O Meu Ritmo é uma ferramenta de autoconhecimento e não substitui acompanhamento médico. Procure uma profissional se tiver dor forte, sangramento fora do padrão ou ciclos muito irregulares.</p>
+      <p class="muted" style="font-size:14px;margin-bottom:0">As previsões são estimativas. Não use o app como método contraceptivo nem para planejar gravidez.</p></div>
+    <div class="card mt16"><h2 class="serif h2 fit">Privacidade</h2>
+      <p class="muted" style="font-size:14px;margin-bottom:0">Seus registros ficam só neste aparelho. O Meu Ritmo não tem anúncios e não vende dados.</p></div>`;
+  ligarVoltar();
 }
 function confirmarApagar() {
   $ov.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" aria-labelledby="aptit"><div class="in">
@@ -635,7 +793,7 @@ new MutationObserver(() => ajustarTitulos()).observe(document.getElementById('ov
 
 // ---------- Navegação ----------
 const TABS = [['hoje', 'Hoje', I.sol], ['calendario', 'Calendário', I.cal], ['conteudo', 'Conteúdo', I.livro], ['voce', 'Você', I.user]];
-function ir(t) { tela = t; if (t !== 'conteudo') conteudoFase = null; render(); window.scrollTo(0, 0); }
+function ir(t) { if (t !== 'voce' || tela === 'voce') voceSub = null; tela = t; if (t !== 'conteudo') conteudoFase = null; render(); window.scrollTo(0, 0); }
 function renderTabs() {
   $tabs.hidden = false;
   $tabs.innerHTML = TABS.map(([id, t, p]) => `<button type="button" class="${tela === id ? 'on' : ''}" data-t="${id}" ${tela === id ? 'aria-current="page"' : ''}>${ico(p)}${t}</button>`).join('');
