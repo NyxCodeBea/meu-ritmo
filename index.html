@@ -58,6 +58,22 @@ nav.tabs button.on{color:var(--primary-ink);font-weight:700}
 .bars{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
 .bars span{height:8px;border-radius:4px;background:rgba(255,255,255,.32)}
 .bars span.on{background:#fff}
+.ring{position:relative;width:96px;height:96px;flex-shrink:0}
+.ring svg{width:96px;height:96px;transform:rotate(-90deg)}
+.ring .in{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}
+.tl{position:relative;margin:18px 6px 0}
+.tl .track{height:4px;border-radius:2px;background:var(--line)}
+.tl .fill{position:absolute;left:0;top:0;height:4px;border-radius:2px;background:var(--accent)}
+.tl .pt{position:absolute;top:-5px;width:14px;height:14px;border-radius:7px;margin-left:-7px;border:3px solid #fff;box-shadow:0 0 0 1px var(--line)}
+.tl .now{position:absolute;top:-9px;width:22px;height:22px;border-radius:11px;margin-left:-11px;background:var(--ink);border:3px solid #fff}
+.tlabels{display:grid;grid-template-columns:1fr 1fr 1fr;margin-top:16px;font-size:12px}
+.tlabels div:nth-child(2){text-align:center}.tlabels div:nth-child(3){text-align:right}
+.tlabels b{display:block;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.streak{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:12px}
+.streak div{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:11px;color:var(--muted);font-weight:500}
+.streak span{width:36px;height:36px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;border:1.5px solid var(--line);background:#fff;color:var(--ink)}
+.streak span.on{background:var(--primary);border-color:var(--primary);color:#fff}
+.streak span.hj{border-color:var(--primary);border-style:dashed}
 .sug{background:#fff;border-radius:20px;padding:14px;display:flex;flex-direction:column;gap:8px;min-height:108px}
 .sug .ic{width:30px;height:30px;border-radius:10px;display:flex;align-items:center;justify-content:center}
 .sug .ic svg{width:17px;height:17px}
@@ -387,22 +403,54 @@ function renderHoje() {
       <h1 class="serif" style="font-size:26px">${saudacao()}, ${esc(data.perfil.nome)}</h1></div>${logo()}</div>
     <div class="week mt16">${semana}</div>
     <div class="phasecard mt20" style="background:${c.cor}">
-      <div class="row" style="align-items:flex-start">
-        <div><div class="kicker" style="opacity:.92">Fase ${F.nome}</div><div class="serif" style="font-size:25px;line-height:1.15;max-width:230px;margin-top:4px">${F.frase}</div></div>
-        <div style="text-align:right"><div class="kicker" style="font-size:11px;opacity:.92">Dia</div><div class="serif" style="font-size:44px;line-height:1;font-weight:600">${pad(info.dia)}</div></div>
+      <div class="row" style="align-items:center;justify-content:flex-start;gap:16px">
+        <div class="ring" role="img" aria-label="Dia ${info.dia} de ${info.ciclo} do ciclo">
+          <svg viewBox="0 0 96 96" aria-hidden="true"><circle cx="48" cy="48" r="42" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="7"/>
+          <circle cx="48" cy="48" r="42" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-dasharray="${(2 * Math.PI * 42 * Math.min(info.dia, info.ciclo) / info.ciclo).toFixed(1)} 999"/></svg>
+          <div class="in"><span style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;opacity:.92">Dia</span><span class="serif" style="font-size:34px;font-weight:600">${info.dia}</span><span style="font-size:11px;opacity:.92">de ${info.ciclo}</span></div>
+        </div>
+        <div><div class="kicker" style="opacity:.92">Fase ${F.nome}</div><div class="serif" style="font-size:22px;line-height:1.15;margin-top:4px">${F.frase}</div></div>
       </div>
       <div><div class="row" style="font-size:13px;font-weight:500"><span>Energia esperada</span><span>${['', 'Baixa', 'Moderada', 'Boa', 'Alta'][F.energia]}</span></div>
       <div class="bars mt8">${[1, 2, 3, 4].map(n => `<span class="${n <= F.energia ? 'on' : ''}"></span>`).join('')}</div></div>
-      <div style="font-size:13px;font-weight:500">${proxTxt}${info.previsto ? ' · previsão' : ''}</div>
+      ${prox && prox.fase !== 'm' ? `<div style="font-size:13px;font-weight:500">${proxTxt}</div>` : ''}
     </div>
+    ${linhaDoTempo(d, info)}
     ${info.previsto ? `<p class="note mt8">Sua menstruação passou da data prevista. Se ela já começou, marque abaixo para o app se ajustar.</p>` : ''}
     <div class="row mt24"><h2 class="serif h2">Seu dia de hoje</h2><button class="chip" style="min-height:36px;border:0;background:none;color:var(--primary-ink);font-weight:600;padding:0" id="vermais">Ver mais</button></div>
     <div class="grid2 mt12">${cards}</div>
+    ${sequencia(d)}
     <button class="btn mt16" id="registrar">${reg ? ico(I.check) + ' Registro de hoje feito · editar' : ico(I.mais) + ' Como você está hoje?'}</button>
     <button class="btn ghost mt12" id="menstruou">${ico(I.gota)} Minha menstruação começou hoje</button>`;
   document.getElementById('registrar').onclick = () => abrirRegistro(iso(d));
   document.getElementById('vermais').onclick = () => { conteudoFase = info.fase; ir('conteudo'); };
   document.getElementById('menstruou').onclick = () => marcarInicio(iso(d));
+}
+const curta = d => d.getDate() + ' ' + MESES[d.getMonth()].slice(0, 3);
+function linhaDoTempo(d, info) {
+  const ini = ultimoInicio(d) || addDias(d, -(info.dia - 1));
+  const ovu = addDias(ini, info.ovu - 1);
+  const prox = proximaMenstruacao(d);
+  const pos = Math.min(100, Math.max(0, (info.dia - 1) / (info.ciclo - 1) * 100));
+  const posOvu = (info.ovu - 1) / (info.ciclo - 1) * 100;
+  const faltam = diasEntre(d, prox);
+  return `<div class="card mt12">
+    <div class="row"><span style="font-size:14px;font-weight:600">${faltam <= 0 ? 'Menstruação prevista para hoje' : faltam === 1 ? 'Falta 1 dia para a menstruação' : 'Faltam ' + faltam + ' dias para a menstruação'}</span></div>
+    <div class="tl" aria-hidden="true"><div class="track"></div><div class="fill" style="width:${pos}%"></div>
+      <span class="pt" style="left:0;background:var(--m)"></span><span class="pt" style="left:${posOvu}%;background:var(--o)"></span><span class="pt" style="left:100%;background:#fff;box-shadow:0 0 0 2px var(--m)"></span>
+      <span class="now" style="left:${pos}%"></span></div>
+    <div class="tlabels"><div><b>Última</b>${curta(ini)}</div><div><b>Ovulação</b>${curta(ovu)}</div><div><b>Próxima</b>${curta(prox)}</div></div>
+  </div>`;
+}
+function sequencia(d) {
+  let n = 0, x = data.registros[iso(d)] ? d : addDias(d, -1);
+  while (data.registros[iso(x)]) { n++; x = addDias(x, -1); }
+  const dias = Array.from({ length: 7 }, (_, i) => addDias(d, i - 6));
+  return `<div class="card mt16"><div class="row"><span class="serif" style="font-size:19px">Sua sequência</span>
+    <span style="font-size:13px;font-weight:600;color:var(--primary-ink)">${n === 0 ? 'Comece hoje' : n + (n === 1 ? ' dia seguido' : ' dias seguidos')}</span></div>
+    <div class="streak">${dias.map(di => { const on = !!data.registros[iso(di)], hj = iso(di) === iso(d);
+      return `<div>${SEM[di.getDay()]}<span class="${on ? 'on' : ''} ${hj && !on ? 'hj' : ''}" aria-label="${di.getDate()}: ${on ? 'registrado' : 'sem registro'}">${on ? ico(I.check, 'style="width:16px;height:16px"') : di.getDate()}</span></div>`; }).join('')}</div>
+    <p class="note" style="margin:10px 0 0">Registrar todo dia, nem que seja só a energia, é o que faz o app aprender o seu padrão.</p></div>`;
 }
 function saudacao() { const h = new Date().getHours(); return h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite'; }
 function marcarInicio(dia) {
