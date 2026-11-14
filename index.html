@@ -33,6 +33,7 @@ button{cursor:pointer}
 .card{background:var(--card);border-radius:22px;padding:16px}
 h1,h2,h3{margin:0}
 .h1{font-size:28px;line-height:1.12}
+.fit{white-space:nowrap;overflow:hidden;text-overflow:clip;min-width:0}
 .h2{font-size:21px}
 .mt8{margin-top:8px}.mt12{margin-top:12px}.mt16{margin-top:16px}.mt20{margin-top:20px}.mt24{margin-top:24px}
 .btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:52px;width:100%;border-radius:26px;border:0;background:var(--primary);color:#fff;font-weight:600;font-size:16px;padding:0 20px}
@@ -196,10 +197,10 @@ function diasAteProximaFase(d) {
 
 // ---------- Conteúdo (rascunho para revisão profissional) ----------
 const FASES = {
-  m: { nome: 'menstrual', titulo: 'Menstrual', energia: 1, frase: 'Hora de desacelerar e se acolher' },
-  f: { nome: 'folicular', titulo: 'Folicular', energia: 3, frase: 'Energia subindo, bom momento para começar' },
-  o: { nome: 'ovulatória', titulo: 'Ovulatória', energia: 4, frase: 'Pico de energia e de conversa' },
-  l: { nome: 'lútea', titulo: 'Lútea', energia: 2, frase: 'Desacelere, organize e se cuide' }
+  m: { nome: 'menstrual', titulo: 'Menstrual', energia: 1, frase: 'Desacelere e se acolha' },
+  f: { nome: 'folicular', titulo: 'Folicular', energia: 3, frase: 'Energia subindo' },
+  o: { nome: 'ovulatória', titulo: 'Ovulatória', energia: 4, frase: 'Pico de energia' },
+  l: { nome: 'lútea', titulo: 'Lútea', energia: 2, frase: 'Desacelere e se cuide' }
 };
 const SUGESTOES = {
   m: {
@@ -312,6 +313,7 @@ const corFase = f => ({ cor: `var(--${f})`, ink: `var(--${f}-ink)`, soft: `var(-
 
 // ---------- Cadastro ----------
 function renderOnboarding() {
+  setTimeout(() => ajustarTitulos(), 0);
   $tabs.hidden = true;
   const p = onb.passo, total = 4;
   const steps = `<div class="steps" aria-hidden="true">${Array.from({ length: total }, (_, i) => `<i class="${i <= p ? 'on' : ''}"></i>`).join('')}</div>`;
@@ -319,26 +321,26 @@ function renderOnboarding() {
   if (p === 0) {
     corpo = `<div style="display:flex;flex-direction:column;align-items:flex-start;gap:16px;margin-top:40px">
       ${logo(72)}
-      <h1 class="serif h1" style="font-size:34px">Seu ciclo,<br>seu ritmo.</h1>
+      <h1 class="serif h1 fit" style="font-size:34px;width:100%">Seu ciclo, seu ritmo.</h1>
       <p class="muted" style="margin:0;font-size:16px">Um app que entende que você não é igual todo dia. Descubra sua fase e receba sugestões para treino, comida, trabalho e autocuidado.</p>
       <div class="field" style="width:100%;margin-top:12px"><label for="nome">Como você quer ser chamada?</label>
       <input class="input" id="nome" autocomplete="given-name" value="${esc(onb.nome)}" placeholder="Seu nome"></div></div>`;
     pode = onb.nome.trim().length > 0;
   } else if (p === 1) {
-    corpo = `<h1 class="serif h1 mt24">Quando começou sua última menstruação?</h1>
+    corpo = `<h1 class="serif h1 mt24 fit">Sua última menstruação</h1>
       <p class="muted">O primeiro dia do sangramento. Se não lembrar exato, uma data aproximada já ajuda.</p>
       <div class="field mt16"><label for="ini">Primeiro dia</label><input class="input" type="date" id="ini" max="${iso(hoje())}" value="${onb.inicio}"></div>
       <div class="field mt16"><label for="ant">E a menstruação anterior? (opcional)</label><input class="input" type="date" id="ant" max="${onb.inicio || iso(hoje())}" value="${onb.anterior}"></div>
       <p class="note mt8">Com as duas datas, o app já calcula o tamanho do seu ciclo. Se usa outro app de menstruação, as datas estão lá.</p>`;
     pode = !!onb.inicio;
   } else if (p === 2) {
-    corpo = `<h1 class="serif h1 mt24">Como costuma ser o seu ciclo?</h1>
+    corpo = `<h1 class="serif h1 mt24 fit">Como é o seu ciclo?</h1>
       <p class="muted">${onb.anterior ? 'Calculamos pelo intervalo entre as duas datas que você informou. Ajuste se quiser.' : 'Não sabe? Deixe como está. O app ajusta sozinho conforme você registra.'}</p>
       <div class="field mt16"><label for="ciclo">Duração do ciclo (dias)</label><input class="input" type="number" inputmode="numeric" min="18" max="45" id="ciclo" value="${onb.ciclo}"></div>
       <div class="field mt12"><label for="menstr">Duração da menstruação (dias)</label><input class="input" type="number" inputmode="numeric" min="2" max="10" id="menstr" value="${onb.menstruacao}"></div>`;
     pode = onb.ciclo >= 18 && onb.ciclo <= 45 && onb.menstruacao >= 2 && onb.menstruacao <= 10;
   } else {
-    corpo = `<h1 class="serif h1 mt24">O que você quer do Meu Ritmo?</h1>
+    corpo = `<h1 class="serif h1 mt24 fit">O que você busca?</h1>
       <p class="muted">Escolha quantos quiser. Isso define o que aparece primeiro no seu dia.</p>
       <div class="chips mt16">${OBJETIVOS.map(o => `<button type="button" class="chip ${onb.objetivos.includes(o.id) ? 'on' : ''}" data-obj="${o.id}" aria-pressed="${onb.objetivos.includes(o.id)}">${o.t}</button>`).join('')}</div>
       <p class="note mt24">O Meu Ritmo é uma ferramenta de autoconhecimento. Não faz diagnóstico, não substitui acompanhamento médico e não é método contraceptivo. Seus dados ficam só neste aparelho.</p>`;
@@ -394,8 +396,8 @@ function renderHoje() {
   }).join('');
   const reg = data.registros[iso(d)];
   $app.innerHTML = `
-    <div class="row"><div style="min-width:0"><div class="muted" style="font-size:13px">${dataLonga(d)}</div>
-      <h1 class="serif" style="font-size:26px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${saudacao()}, ${esc(data.perfil.nome.split(/\s+/)[0])}</h1></div>${logo()}</div>
+    <div class="row"><div style="flex:1;min-width:0"><div class="muted" style="font-size:13px">${dataLonga(d)}</div>
+      <h1 class="serif fit" style="font-size:26px">${saudacao()}, ${esc(data.perfil.nome.split(/\s+/)[0])}</h1></div>${logo()}</div>
     <div class="week mt16">${semana}</div>
     <div class="phasecard mt20" style="background:${c.cor}">
       <div class="row" style="align-items:center;justify-content:flex-start;gap:16px">
@@ -404,7 +406,7 @@ function renderHoje() {
           <circle cx="48" cy="48" r="42" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-dasharray="${(2 * Math.PI * 42 * Math.min(info.dia, info.ciclo) / info.ciclo).toFixed(1)} 999"/></svg>
           <div class="in"><span style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;opacity:.92">Dia</span><span class="serif" style="font-size:34px;font-weight:600">${info.dia}</span><span style="font-size:11px;opacity:.92">de ${info.ciclo}</span></div>
         </div>
-        <div><div class="kicker" style="opacity:.92">Fase ${F.nome}</div><div class="serif" style="font-size:22px;line-height:1.15;margin-top:4px">${F.frase}</div></div>
+        <div style="flex:1;min-width:0"><div class="kicker" style="opacity:.92">Fase ${F.nome}</div><div class="serif fit" style="font-size:24px;line-height:1.15;margin-top:4px">${F.frase}</div></div>
       </div>
       <div><div class="row" style="font-size:13px;font-weight:500"><span>Energia esperada</span><span>${['', 'Baixa', 'Moderada', 'Boa', 'Alta'][F.energia]}</span></div>
       <div class="bars mt8">${[1, 2, 3, 4].map(n => `<span class="${n <= F.energia ? 'on' : ''}"></span>`).join('')}</div></div>
@@ -468,7 +470,7 @@ function abrirRegistro(dia) {
     $ov.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" aria-labelledby="regtit"><div class="in">
       <div class="row"><span class="kicker" style="color:${c.ink}">Dia ${info.dia} · ${FASES[info.fase].titulo}</span>
       <button class="iconbtn" id="fechar" aria-label="Fechar">${ico(I.x)}</button></div>
-      <h2 class="serif h1 mt8" id="regtit">${dia === iso(hoje()) ? 'Como você está hoje?' : 'Registro de ' + d.getDate() + ' de ' + MESES[d.getMonth()]}</h2>
+      <h2 class="serif h1 mt8 fit" id="regtit">${dia === iso(hoje()) ? 'Como você está hoje?' : 'Registro de ' + d.getDate() + ' de ' + MESES[d.getMonth()]}</h2>
       <div class="kicker muted mt20" style="font-size:12px">Energia</div>
       <div class="seg energy mt8" style="grid-template-columns:repeat(5,1fr)">${ENERGIAS.map((e, i) => `<button type="button" class="${r.energia === i + 1 ? 'on' : ''}" data-e="${i + 1}" aria-pressed="${r.energia === i + 1}"><b>${i + 1}</b>${e}</button>`).join('')}</div>
       <div class="kicker muted mt20" style="font-size:12px">Humor</div><div class="chips mt8">${chips(HUMORES, r.humor, 'humor')}</div>
@@ -513,7 +515,7 @@ function renderCalendario() {
   const resumo = reg ? [reg.energia ? 'Energia ' + ENERGIAS[reg.energia - 1].toLowerCase() : '', ...(reg.humor || []), ...(reg.sintomas || []).filter(s => s !== 'Nenhum'), reg.fluxo && reg.fluxo !== 'Nenhum' ? 'Fluxo ' + reg.fluxo.toLowerCase() : ''].filter(Boolean).join(' · ') : '';
   const passado = sd <= hoje();
   $app.innerHTML = `
-    <div class="row"><div><div class="kicker muted">Seu ciclo</div><h1 class="serif h1">${MESES[mes][0].toUpperCase() + MESES[mes].slice(1)} de ${ano}</h1></div>
+    <div class="row"><div style="flex:1;min-width:0"><div class="kicker muted">Seu ciclo</div><h1 class="serif h1 fit">${MESES[mes][0].toUpperCase() + MESES[mes].slice(1)} de ${ano}</h1></div>
       <div style="display:flex;gap:8px"><button class="iconbtn" id="ant" aria-label="Mês anterior">${ico(I.volta)}</button><button class="iconbtn" id="prox" aria-label="Próximo mês">${ico(I.vai)}</button></div></div>
     <div class="card mt20" style="padding:16px 10px"><div class="cal">${cells}</div></div>
     <div class="legend mt16"><div><span style="background:var(--m)"></span>Menstrual</div><div><span style="background:var(--f)"></span>Folicular</div><div><span style="background:var(--o)"></span>Ovulatória</div><div><span style="background:var(--l)"></span>Lútea</div>
@@ -543,7 +545,7 @@ function renderCalendario() {
 function renderConteudo() {
   const f = conteudoFase || infoDia(hoje()).fase, c = corFase(f), L = LEITURAS[f], mv = MOVIMENTO[f];
   $app.innerHTML = `
-    <div class="kicker" style="color:var(--primary-ink)">Para a sua fase</div><h1 class="serif h1">Conteúdo</h1>
+    <div class="kicker" style="color:var(--primary-ink)">Para a sua fase</div><h1 class="serif h1 fit">Conteúdo</h1>
     <div class="chips mt16">${['m', 'f', 'o', 'l'].map(x => `<button type="button" class="chip ${x === f ? 'on' : ''}" data-f="${x}" aria-pressed="${x === f}" style="min-height:38px">${FASES[x].titulo}</button>`).join('')}</div>
     <article class="article mt16">
       <div class="kicker" style="color:#F4B6C3;font-size:11px">Leitura · ${L.min} min</div>
@@ -575,7 +577,7 @@ function renderVoce() {
     return `<div class="statrow mt8"><span>${FASES[f].titulo}</span><span class="track"><i style="width:${media / 5 * 100}%;background:var(--${f})"></i></span><span class="muted">${a.length ? media.toFixed(1) : '–'}</span></div>`;
   }).join('');
   $app.innerHTML = `
-    <div class="row"><div><div class="kicker muted">Perfil</div><h1 class="serif h1">${esc(p.nome)}</h1></div>${logo()}</div>
+    <div class="row"><div style="flex:1;min-width:0"><div class="kicker muted">Perfil</div><h1 class="serif h1 fit">${esc(p.nome)}</h1></div>${logo()}</div>
     <div class="card mt20"><h2 class="serif h2">Seus padrões</h2>
       <p class="muted" style="font-size:14px;margin:6px 0 4px">Sua energia média registrada em cada fase (1 a 5).</p>
       ${linhas}
@@ -607,7 +609,7 @@ function renderVoce() {
 }
 function confirmarApagar() {
   $ov.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" aria-labelledby="aptit"><div class="in">
-    <h2 class="serif h1" id="aptit">Apagar tudo?</h2>
+    <h2 class="serif h1 fit" id="aptit">Apagar tudo?</h2>
     <p class="muted">Seus registros, ciclos e perfil serão apagados deste aparelho. Isso não pode ser desfeito.</p>
     <button class="btn mt16" id="sim" style="background:#8E2F45">Sim, apagar tudo</button>
     <button class="btn ghost mt12" id="nao">Cancelar</button></div></div>`;
@@ -618,6 +620,18 @@ function confirmarApagar() {
     fecharSheet(); render();
   };
 }
+
+// ---------- Títulos sempre em uma linha ----------
+function ajustarTitulos(raiz = document) {
+  raiz.querySelectorAll('.fit').forEach(el => {
+    el.style.fontSize = '';
+    let t = parseFloat(getComputedStyle(el).fontSize);
+    while (el.scrollWidth > el.clientWidth + 1 && t > 14) { t -= 1; el.style.fontSize = t + 'px'; }
+  });
+}
+window.addEventListener('resize', () => ajustarTitulos());
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => ajustarTitulos());
+new MutationObserver(() => ajustarTitulos()).observe(document.getElementById('overlay'), { childList: true });
 
 // ---------- Navegação ----------
 const TABS = [['hoje', 'Hoje', I.sol], ['calendario', 'Calendário', I.cal], ['conteudo', 'Conteúdo', I.livro], ['voce', 'Você', I.user]];
@@ -631,6 +645,7 @@ function render() {
   if (!data.perfil) { renderOnboarding(); return; }
   renderTabs();
   ({ hoje: renderHoje, calendario: renderCalendario, conteudo: renderConteudo, voce: renderVoce })[tela]();
+  ajustarTitulos();
 }
 render();
 </script>
